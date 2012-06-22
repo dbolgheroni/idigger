@@ -25,13 +25,6 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# TODO
-# x interface to functions
-# x functions prototypes
-# x module/package (?)
-# x log file
-# x parameter to only download stock info if asked to (debugging)
 
 use strict;
 #use WWW::Curl::Easy;
