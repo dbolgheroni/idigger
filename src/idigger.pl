@@ -31,7 +31,7 @@
 # x functions prototypes
 # x module/package (?)
 # x log file
-# x parameter to only download stock info if asked to
+# x parameter to only download stock info if asked to (debugging)
 
 use strict;
 #use WWW::Curl::Easy;
@@ -108,33 +108,42 @@ sub _gi_get_current_pe {
 }
 
 # check for command line options
-our ($opt_h, $opt_g);
-getopts('h:g');
+our ($opt_d,, $opt_f);
+getopts('df:');
 
 # initializes some data structures
+my ($ofile);
 @stock = init_stock_conf;
 
 # real processing starts here
-_gi_dl_stock_info (@stock);
 my %pe = _gi_get_current_pe (@stock);
 
-print start_html('invest system');
-print h1('Rela&ccedil;&atilde;o P/L');
+if (!$opt_f) {
+    print "need to specify a file for output with -f\n";
+    exit 1;
+} else {
+    $ofile = $opt_f;
 
-print "<table border=1>\n";
-print "<tr bgcolor=#c0c0c0><th>A&ccedil;&atilde;o</th><th>P/L</th><tr>\n";
+    open (OFILE, ">", $ofile) ||
+        die "can't create/write to $ofile, quiting\n";
+}
+
+print OFILE start_html('invest system');
+print OFILE h1('Rela&ccedil;&atilde;o P/L');
+
+print OFILE "<table border=1>\n";
+print OFILE "<tr bgcolor=#c0c0c0><th>A&ccedil;&atilde;o</th><th>P/L</th><tr>\n";
 
 foreach my $key (sort keys %pe) {
-    print "<tr><td>$key</td>";
+    print OFILE "<tr><td>$key</td>";
 
     if (($pe{$key} < 6.0) && ($pe{$key} >= 0.0)) {
-        print "<td style=\"background-color:lightgreen\">",
+        print OFILE "<td style=\"background-color:lightgreen\">",
               uc ($pe{$key}), "</td></tr>\n";
     } else {
-        print "<td>", uc ($pe{$key}), "</td></tr>\n";
+        print OFILE "<td>", uc ($pe{$key}), "</td></tr>\n";
     }
 }
 
-print "</table>\n";
-
-print end_html;
+print OFILE "</table>\n";
+print OFILE end_html;
