@@ -128,6 +128,10 @@ if (!$opt_f) {
         die "can't create/write to $ofile, quiting\n";
 }
 
+if ($opt_d) {
+    _gi_dl_stock_info(@stock);
+}
+
 print OFILE start_html('invest system');
 print OFILE h1('Rela&ccedil;&atilde;o P/L');
 
