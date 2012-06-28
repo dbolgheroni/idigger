@@ -75,29 +75,42 @@ sub _gi_dl_stock_info {
     }
 }
 
-# P/E ratio
-# returns a hash of P/E ordered from lower to higher
-# note: lower is better 
-# TODO: prototype to put constraints on the parameter list
-sub _gi_get_current_pe {
-    my (%pe, $stock, $key);
+sub _gi_get_id {
+    my (%ratio, $key);
 
-    foreach $stock (@_) {
+    my ($tag, @args) = @_;
+    
+    foreach my $stock (@args ) {
         open (STOCK, "<", "$ENV{HOME}/.idigger/rawdata/$stock.aspx") ||
             die "can't open $stock.aspx\n";
 
         while (<STOCK>) {
-            if (/lbPrecoLucroAtual/) {
+            if (/$tag/) {
                 s/.*\">//;
                 s/<.*//;
                 s/,/./;
                 chomp;
-                $pe{$stock} = $_;
+                $ratio{$stock} = $_;
             }
         }
     }
     
+    return %ratio;
+}
+
+# P/E ratio (P/L in portuguese)
+# returns a hash of P/E ordered from lower to higher
+# note: lower is better 
+# TODO: prototype to put constraints on the parameter list
+sub get_pe {
+    my %pe = _gi_get_id('lbPrecoLucroAtual', @_);
     return %pe;
+}
+
+# P/VB ratio (P/VPA in portuguese)
+sub get_pvb {
+    my %pvb = _gi_get_id('lbPrecoValorPatrimonialAtual', @_);
+    return %pvb;
 }
 
 # check for command line options
@@ -109,8 +122,23 @@ my ($ofile);
 @stock = init_stock_conf;
 
 # real processing starts here
-my %pe = _gi_get_current_pe (@stock);
+my %pe = get_pe (@stock);
+my %pvb = get_pvb (@stock);
 
+# concatenate
+my %stock;
+foreach my $stock (@stock) {
+    #print "$stock:\n";
+    # pe
+    $stock{$stock}{pe} = $pe{$stock};
+    #print "  pe = $stock{$stock}{pe}\n";
+
+    # pvb
+    $stock{$stock}{pvb} = $pvb{$stock};
+    #print "  pvb = $stock{$stock}{pvb}\n";
+}
+
+# process command line options
 if (!$opt_f) {
     print "need to specify a file for output with -f\n";
     exit 1;
@@ -125,21 +153,26 @@ if ($opt_d) {
     _gi_dl_stock_info(@stock);
 }
 
-print OFILE start_html('invest system');
-print OFILE h1('Rela&ccedil;&atilde;o P/L');
+# print to html
+print OFILE start_html('idigger');
+print OFILE h1('idigger');
 
 print OFILE "<table border=1>\n";
-print OFILE "<tr bgcolor=#c0c0c0><th>A&ccedil;&atilde;o</th><th>P/L</th><tr>\n";
+print OFILE "<tr bgcolor=#c0c0c0>",
+            "<th>A&ccedil;&atilde;o</th>", 
+            "<th>P/L</th>",
+            "<th>P/VPA</th></tr>\n";
 
-foreach my $key (sort keys %pe) {
-    print OFILE "<tr><td>$key</td>";
+foreach my $key (sort keys %stock) {
+    my $KEY;
+    $KEY = uc ($key);
+    print OFILE "<tr><td>$KEY</td>";
 
-    if (($pe{$key} < 6.0) && ($pe{$key} >= 0.0)) {
-        print OFILE "<td style=\"background-color:lightgreen\">",
-              uc ($pe{$key}), "</td></tr>\n";
-    } else {
-        print OFILE "<td>", uc ($pe{$key}), "</td></tr>\n";
-    }
+    # validate
+    
+    print OFILE "<td>", $stock{$key}{pe}, "</td>";
+    print OFILE "<td>", $stock{$key}{pvb}, "</td>";
+    print OFILE "</tr>\n";
 }
 
 print OFILE "</table>\n";
