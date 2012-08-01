@@ -75,12 +75,14 @@ sub _gi_dl_stock_info {
     }
 }
 
+# the function that really do the job for get_*(), like get_pe(),
+# get_pvb(), etc.
 sub _gi_get_id {
     my (%ratio, $key);
 
     my ($tag, @args) = @_;
     
-    foreach my $stock (@args ) {
+    foreach my $stock (@args) {
         open (STOCK, "<", "$ENV{HOME}/.idigger/rawdata/$stock.aspx") ||
             die "can't open $stock.aspx\n";
 
@@ -140,13 +142,13 @@ foreach my $stock (@stock) {
 
 # process command line options
 if (!$opt_f) {
-    print "need to specify a file for output with -f\n";
+    print "$0: no file name specified for the -f option\n";
     exit 1;
 } else {
     $ofile = $opt_f;
 
     open (OFILE, ">", $ofile) ||
-        die "can't create/write to $ofile, quiting\n";
+        die "$0: can't create/write to $ofile, quiting\n";
 }
 
 if ($opt_d) {
