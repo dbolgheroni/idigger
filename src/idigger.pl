@@ -57,6 +57,7 @@ if ($ARGV[0]) {
     $ofile = *STDOUT;
 }
 
+my @stockconf;
 my ($conffile, $title);
 if (!$opt_s) {
     print "$0: need to specify stock list\n";
@@ -67,6 +68,9 @@ if (!$opt_s) {
 
     $title =~ s/.*\///;
     $title =~ s/\.conf//;
+
+    # loads conffile
+    @stockconf = Conf->init($conffile);
 }
 
 my $Engine;
@@ -77,14 +81,10 @@ if (!$opt_E) {
     $Engine = $opt_E;
 }
 
-my @stockconf;
 if ($opt_d) {
     $Engine->fetch(@stockconf);
 }
 # end of processing command line options
-
-# loads conf file
-@stockconf = Conf->init($conffile);
 
 # instantiate every stock in conf file
 my @Stock;

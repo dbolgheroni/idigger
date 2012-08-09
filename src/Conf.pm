@@ -45,7 +45,7 @@ sub init {
     my @stock;
 
     open (STOCKCONF, "<", $conffile) ||
-        die "$0: can't open .stock.conf\n";
+        die "$0: can't open $conffile\n";
 
     my $stock;
     while (<STOCKCONF>) {
