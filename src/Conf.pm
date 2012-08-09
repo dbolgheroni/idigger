@@ -40,11 +40,12 @@ BEGIN {
 # TODO: prototype to put constraints on the parameter list
 sub init {
     my $class = shift;
+    my $conffile = shift;
 
     my @stock;
 
-    open (STOCKCONF, "<", "$ENV{HOME}/.idigger/stock.conf") ||
-    die "$0: can't open .stock.conf\n";
+    open (STOCKCONF, "<", $conffile) ||
+        die "$0: can't open .stock.conf\n";
 
     my $stock;
     while (<STOCKCONF>) {

@@ -45,33 +45,46 @@ use Stock;
 #$curl->perform;
 
 # check for command line options
-our ($opt_d,, $opt_f, $opt_E);
-getopts('df:E:');
+our ($opt_d, $opt_s, $opt_E);
+getopts('ds:E:');
 
 # process command line options
-if (!$opt_f) {
-    print "$0: no file name specified for the -f option\n";
+my $ofile;
+if ($ARGV[0]) {
+    open ($ofile, ">", $ARGV[0]) ||
+        die "$0: can't create/write to $ARGV[0]\n";
+} else {
+    $ofile = *STDOUT;
+}
+
+my ($conffile, $title);
+if (!$opt_s) {
+    print "$0: need to specify stock list\n";
     exit 1;
 } else {
-    open (OFILE, ">", $opt_f) ||
-        die "$0: can't create/write to $opt_f, quiting\n";
+    $conffile = $opt_s;
+    $title = $conffile;
+
+    $title =~ s/.*\///;
+    $title =~ s/\.conf//;
 }
 
 my $Engine;
 if (!$opt_E) {
-    print "$0: Engine not specified, using default\n";
-    exit 1;
-} else {
+    print "$0: Engine not specified, using default (GI)\n";
     $Engine = "GI";
+} else {
+    $Engine = $opt_E;
 }
 
 my @stockconf;
 if ($opt_d) {
     $Engine->fetch(@stockconf);
 }
+# end of processing command line options
 
 # loads conf file
-@stockconf = Conf->init;
+@stockconf = Conf->init($conffile);
 
 # instantiate every stock in conf file
 my @Stock;
@@ -79,10 +92,10 @@ foreach my $stock (@stockconf) {
     my $newStock = Stock->new($stock);
 
     my $pe = $Engine->get_pe($stock);   # class method
-    $newStock->pe($pe);            # instance method
+    $newStock->pe($pe);                 # instance method
 
     my $pvb = $Engine->get_pvb($stock); # class method
-    $newStock->pvb($pvb);          # instance method
+    $newStock->pvb($pvb);               # instance method
 
     push @Stock, $newStock;
 }
@@ -96,22 +109,30 @@ foreach my $stock (@stockconf) {
 #}
 
 # print to html
-print OFILE start_html('idigger');
-print OFILE h1('idigger');
+print $ofile start_html('idigger');
+print $ofile h2($title);
 
-print OFILE "<table border=1>\n";
-print OFILE "<tr bgcolor=#c0c0c0>",
+# a little obscure date but it doesn't need external module
+my @lt = localtime;
+$lt[4]++;
+$lt[5]+=1900;
+
+print $ofile "<p>Atualizado: ", "$lt[3]/$lt[4]/$lt[5]\n", "</p>";
+
+print $ofile "<table border=1>\n";
+print $ofile "<tr bgcolor=#c0c0c0>",
             "<th>A&ccedil;&atilde;o</th>", 
             "<th>P/L</th>",
             "<th>P/VPA</th></tr>\n";
 
 foreach my $Stock (@Stock) {
-    print OFILE "<tr><td>", $Stock->name, "</td>";
+    print $ofile "<tr><td>", $Stock->name, "</td>";
     
-    print OFILE "<td>", $Stock->pe, "</td>";
-    print OFILE "<td>", $Stock->pvb, "</td>";
-    print OFILE "</tr>\n";
+    print $ofile "<td>", $Stock->pe, "</td>";
+    print $ofile "<td>", $Stock->pvb, "</td>";
+    print $ofile "</tr>\n";
 }
 
-print OFILE "</table>\n";
-print OFILE end_html;
+print $ofile "</table>\n";
+print $ofile end_html;
+print $ofile "\n";
