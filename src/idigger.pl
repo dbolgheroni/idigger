@@ -44,6 +44,13 @@ use Stock;
 #$curl->setopt(CURLOPT_WRITEDATA, $FILE);
 #$curl->perform;
 
+# NOTATION
+# There is a very subtle differences between @stock, @STOCK and @Stock.
+#
+# @stock contains the list of stocks all _lowercase_
+# @STOCK contains the list of stocks all _UPPERCASE_, for printing
+# @Stock contains the list of _objects_, or in Perl, references
+
 # check for command line options
 our ($opt_d, $opt_s, $opt_E);
 getopts('ds:E:');
@@ -54,10 +61,12 @@ if ($ARGV[0]) {
     open ($ofile, ">", $ARGV[0]) ||
         die "$0: can't create/write to $ARGV[0]\n";
 } else {
-    $ofile = *STDOUT;
+    #$ofile = *STDOUT;
+    print "usage: $0 -s file [-E engine] [-d] file\n"; 
+    exit 1;
 }
 
-my @stockconf;
+my (@stock, @STOCK);
 my ($conffile, $title);
 if (!$opt_s) {
     print "$0: need to specify stock list\n";
@@ -70,7 +79,7 @@ if (!$opt_s) {
     $title =~ s/\.conf//;
 
     # loads conffile
-    @stockconf = Conf->init($conffile);
+    @stock = Conf->init($conffile);
 }
 
 my $Engine;
@@ -82,20 +91,23 @@ if (!$opt_E) {
 }
 
 if ($opt_d) {
-    $Engine->fetch(@stockconf);
+    $Engine->fetch(@stock);
 }
 # end of processing command line options
 
 # instantiate every stock in conf file
 my @Stock;
-foreach my $stock (@stockconf) {
-    my $newStock = Stock->new($stock);
+foreach my $stock (@stock) {
+    my $newStock = Stock->new(uc $stock);
 
     my $pe = $Engine->get_pe($stock);   # class method
     $newStock->pe($pe);                 # instance method
 
-    my $pvb = $Engine->get_pvb($stock); # class method
-    $newStock->pvb($pvb);               # instance method
+    my $roe = $Engine->get_roe($stock); # class method
+    $newStock->roe($roe);               # instance method
+
+    #my $pvb = $Engine->get_pvb($stock); # class method
+    #$newStock->pvb($pvb);               # instance method
 
     push @Stock, $newStock;
 }
@@ -123,13 +135,16 @@ print $ofile "<table border=1>\n";
 print $ofile "<tr bgcolor=#c0c0c0>",
             "<th>A&ccedil;&atilde;o</th>", 
             "<th>P/L</th>",
-            "<th>P/VPA</th></tr>\n";
+            "<th>ROE (%)</th>",
+            #"<th>P/VPA</th>",
+            "</tr>\n";
 
 foreach my $Stock (@Stock) {
     print $ofile "<tr><td>", $Stock->name, "</td>";
     
     print $ofile "<td>", $Stock->pe, "</td>";
-    print $ofile "<td>", $Stock->pvb, "</td>";
+    print $ofile "<td>", $Stock->roe, "</td>";
+    #print $ofile "<td>", $Stock->pvb, "</td>";
     print $ofile "</tr>\n";
 }
 

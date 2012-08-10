@@ -39,15 +39,18 @@ BEGIN {
 
 # downloads the stock info of the stocks passed as a parameter and
 # can be used with the LIST returned by init_stock_conf
-# TODO: prototype to put constraints on the parameter list
 sub fetch { # class method
     my $class = shift;
+    my @stock = @_;
+
+    # TODO
+    # check for 'rawdata' dir and create if it doesn't exists
 
     my ($ret, $stock);
-    foreach (@_) {
-        $ret = system ("curl -s \'http://www.guiainvest.com.br/raiox/$_.aspx\' > $ENV{HOME}/.idigger/rawdata/$_.aspx");
+    foreach $stock (@stock) {
+        $ret = system ("curl -s \'http://www.guiainvest.com.br/raiox/$stock.aspx\' > $ENV{HOME}/.idigger/rawdata/$stock.aspx"); 
 
-        $stock = lc $_;
+        $stock = lc $stock;
         if ($ret == 0) {
             print "$stock info downloaded OK\n";
         } else {
@@ -81,9 +84,6 @@ sub _get_id {
 }
 
 # P/E ratio (P/L in portuguese)
-# returns P/E
-# note: lower is better 
-# TODO: prototype to put constraints on the parameter list
 sub get_pe {
     my $class = shift;
     my $stock = shift;
@@ -91,10 +91,18 @@ sub get_pe {
     return _get_id('lbPrecoLucroAtual', $stock);
 }
 
+# ROE (RPL in portuguese)
+sub get_roe {
+    my $class = shift;
+    my $stock = shift;
+
+    my $roe = _get_id('lbRentabilidadePatrimonioLiquido3', $stock);
+    $roe =~ s/%//;
+
+    return $roe;
+}
+
 # P/VB ratio (P/VPA in portuguese)
-# returns P/VB
-# note: lower is better
-# TODO: prototype to put constraints on the parameter list
 sub get_pvb {
     my $class = shift;
     my $stock = shift;

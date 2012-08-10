@@ -37,7 +37,7 @@ use Exporter;
 
 BEGIN {
     our @ISA = qw(Exporter);
-    our @EXPORT = qw(&new &name &pe &pvb);
+    our @EXPORT = qw(&new &name &pe &roe &pvb);
 }
 
 our $Stock;
@@ -54,6 +54,7 @@ sub new {
         $self->{NAME} = undef;
     }
     $self->{PE} = undef;
+    $self->{ROE} = undef;
     $self->{PVB} = undef;
 
     bless ($self, $class);
@@ -78,6 +79,16 @@ sub pe {
     }
 
     return $self->{PE};
+}
+
+sub roe {
+    my $self = shift;
+
+    if (@_) {
+        $self->{ROE} = shift;
+    }
+
+    return $self->{ROE};
 }
 
 sub pvb {

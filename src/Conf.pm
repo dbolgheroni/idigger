@@ -40,20 +40,19 @@ BEGIN {
 # TODO: prototype to put constraints on the parameter list
 sub init {
     my $class = shift;
-    my $conffile = shift;
+    my $confpath = shift;
 
-    my @stock;
+    open (CONFPATH, "<", $confpath) ||
+        die "$0: can't open $confpath\n";
 
-    open (STOCKCONF, "<", $conffile) ||
-        die "$0: can't open $conffile\n";
-
-    my $stock;
-    while (<STOCKCONF>) {
+    my ($stock, @stock);
+    while (<CONFPATH>) {
         chomp;
-        push @stock, $_;
+        $stock = lc;
+        push @stock, $stock;
     }
 
-    close (STOCKCONF);
+    close (CONFPATH);
     return @stock;
 }
 
