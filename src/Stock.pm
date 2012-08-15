@@ -37,7 +37,13 @@ use Exporter;
 
 BEGIN {
     our @ISA = qw(Exporter);
-    our @EXPORT = qw(&new &name &pe &roe &pvb);
+    our @EXPORT = qw(&new 
+                     &name 
+                     &pe 
+                     &roe 
+                     &pe_order 
+                     &roe_order 
+                     &greenblatt);
 }
 
 our $Stock;
@@ -55,7 +61,9 @@ sub new {
     }
     $self->{PE} = undef;
     $self->{ROE} = undef;
-    $self->{PVB} = undef;
+    $self->{PE_ORDER} = undef;
+    $self->{ROE_ORDER} = undef;
+    $self->{GREENBLATT_ORDER} = undef;
 
     bless ($self, $class);
     return $self;
@@ -66,7 +74,6 @@ sub name {
 
     if (@_) { 
         $self->{NAME} = shift;
-        print "set NAME to $self->{NAME}\n";
     }
     return $self->{NAME};
 }
@@ -91,14 +98,34 @@ sub roe {
     return $self->{ROE};
 }
 
-sub pvb {
+sub pe_order {
     my $self = shift;
 
     if (@_) {
-        $self->{PVB} = shift;
+        $self->{PE_ORDER} = shift;
     }
 
-    return $self->{PVB};
+    return $self->{PE_ORDER};
+}
+
+sub roe_order {
+    my $self = shift;
+
+    if (@_) {
+        $self->{ROE_ORDER} = shift;
+    }
+
+    return $self->{ROE_ORDER};
+}
+
+sub greenblatt_order {
+    my $self = shift;
+
+    if (@_) {
+        $self->{GREENBLATT_ORDER} = shift;
+    }
+
+    return $self->{GREENBLATT_ORDER};
 }
 
 END { }

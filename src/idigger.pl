@@ -32,6 +32,7 @@ use warnings;
 #use WWW::Curl::Easy;
 use Getopt::Std;
 use CGI qw/:standard/;
+use Scalar::Util qw/looks_like_number/;
 
 # classes
 use Conf;
@@ -43,13 +44,6 @@ use Stock;
 #open (my $FILE, ">", "curl_output.txt");
 #$curl->setopt(CURLOPT_WRITEDATA, $FILE);
 #$curl->perform;
-
-# NOTATION
-# There is a very subtle differences between @stock, @STOCK and @Stock.
-#
-# @stock contains the list of stocks all _lowercase_
-# @STOCK contains the list of stocks all _UPPERCASE_, for printing
-# @Stock contains the list of _objects_, or in Perl, references
 
 # check for command line options
 our ($opt_d, $opt_s, $opt_E);
@@ -66,8 +60,7 @@ if ($ARGV[0]) {
     exit 1;
 }
 
-my (@stock, @STOCK);
-my ($conffile, $title);
+my (@conf, $conffile, $title);
 if (!$opt_s) {
     print "$0: need to specify stock list\n";
     exit 1;
@@ -79,7 +72,7 @@ if (!$opt_s) {
     $title =~ s/\.conf//;
 
     # loads conffile
-    @stock = Conf->init($conffile);
+    @conf = Conf->init($conffile);
 }
 
 my $Engine;
@@ -91,43 +84,32 @@ if (!$opt_E) {
 }
 
 if ($opt_d) {
-    $Engine->fetch(@stock);
+    $Engine->fetch(@conf);
 }
 # end of processing command line options
 
 # instantiate every stock in conf file
-my @Stock;
-foreach my $stock (@stock) {
-    my $newStock = Stock->new(uc $stock);
+my @obj;
+foreach my $stock (@conf) {
+    my $obj = Stock->new(uc $stock);
 
     my $pe = $Engine->get_pe($stock);   # class method
-    $newStock->pe($pe);                 # instance method
+    $obj->pe($pe);                      # instance method
 
     my $roe = $Engine->get_roe($stock); # class method
-    $newStock->roe($roe);               # instance method
+    $obj->roe($roe);                    # instance method
 
-    #my $pvb = $Engine->get_pvb($stock); # class method
-    #$newStock->pvb($pvb);               # instance method
-
-    push @Stock, $newStock;
+    push @obj, $obj;
 }
-
-# debug
-#foreach my $Stock (@Stock) {
-#    print "Stock: ", $Stock->name, "\n";
-#    print "  PE = ", $Stock->pe, "\n";
-#    print "  PVB = ", $Stock->pvb, "\n";
-#    print "\n";
-#}
 
 # print to html
 print $ofile start_html('idigger');
 print $ofile h2($title);
 
-# a little obscure date but it doesn't need external module
+# a little obscure date but it doesn't need an external module
 my @lt = localtime;
 $lt[4]++;
-$lt[5]+=1900;
+$lt[5] += 1900;
 
 print $ofile "<p>Atualizado: ", "$lt[3]/$lt[4]/$lt[5]\n", "</p>";
 
@@ -135,16 +117,99 @@ print $ofile "<table border=1>\n";
 print $ofile "<tr bgcolor=#c0c0c0>",
             "<th>A&ccedil;&atilde;o</th>", 
             "<th>P/L</th>",
+            #"<th>ordem P/L</th>",
             "<th>ROE (%)</th>",
-            #"<th>P/VPA</th>",
+            #"<th>ordem ROE</th>",
+            "<th>ordem Greenblatt</th>",
             "</tr>\n";
 
-foreach my $Stock (@Stock) {
-    print $ofile "<tr><td>", $Stock->name, "</td>";
-    
-    print $ofile "<td>", $Stock->pe, "</td>";
-    print $ofile "<td>", $Stock->roe, "</td>";
-    #print $ofile "<td>", $Stock->pvb, "</td>";
+# define ordering subroutines 
+sub by_pe {
+    $a->pe <=> $b->pe;
+}
+
+sub by_roe {
+    $b->roe <=> $a->roe;
+}
+
+sub by_greenblatt_order {
+    $a->greenblatt_order <=> $b->greenblatt_order;
+}
+
+# sort pe
+#
+# | pe_rotten || pe_ok |
+# <------------0------->
+# -                    + 
+#
+# becomes
+#
+# |     pe_ordered     | (1)
+# | pe_ok || pe_rotten | 
+# -------->------------>
+#         +            - 
+
+my @pe_ok;
+my @pe_rotten;
+
+# separate stocks 
+# negative P/E -> @pe_rotten
+# positive P/E -> @pe_ok
+foreach my $stock (@obj) {
+    if ($stock->pe > 0) {
+        push @pe_ok, $stock;
+    }
+    else {
+        push @pe_rotten, $stock;
+    }
+}
+
+# order @pe_rotten and @pe_ok accordingly and join in @pe_ordered
+# as in (1)
+my @pe_ordered;
+
+my $pe_order = 0;
+foreach my $stock (sort by_pe @pe_ok) {
+    $pe_order++;
+    $stock->pe_order($pe_order);
+    push @pe_ordered, $stock;
+}
+
+foreach my $stock (reverse sort by_pe @pe_rotten) {
+    $pe_order++;
+    $stock->pe_order($pe_order);
+    push @pe_ordered, $stock;
+}
+
+# sort roe
+my @roe_ordered = @obj;
+
+foreach my $stock (@obj) {
+    if (!looks_like_number($stock->roe)) {
+        $stock->roe(-999);
+    }
+}
+
+my $roe_order = 0;
+foreach my $stock (sort by_roe @roe_ordered) {
+    $roe_order++;
+    $stock->roe_order($roe_order);
+    push @roe_ordered, $stock;
+}
+
+# sorting greenblatt
+foreach my $stock (@obj) {
+    $stock->greenblatt_order($stock->pe_order + $stock->roe_order);
+}
+
+# outputing
+foreach my $stock (sort by_greenblatt_order @obj) {
+    print $ofile "<tr><td>", $stock->name, "</td>";
+    print $ofile "<td>", $stock->pe, "</td>";
+    #print $ofile "<td>", $stock->pe_order, "</td>";
+    print $ofile "<td>", $stock->roe, "</td>";
+    #print $ofile "<td>", $stock->roe_order, "</td>";
+    print $ofile "<td>", $stock->greenblatt_order, "</td>";
     print $ofile "</tr>\n";
 }
 
