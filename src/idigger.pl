@@ -26,6 +26,16 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# perlfaq8 by brian d foy
+BEGIN {
+    use File::Spec::Functions qw(rel2abs);
+    use File::Basename qw(dirname);
+
+    my $path   = rel2abs( $0 );
+    our $dir = dirname( $path );
+}
+use lib $dir;
+
 use strict;
 use warnings;
 
@@ -56,7 +66,7 @@ if ($ARGV[0]) {
         die "$0: can't create/write to $ARGV[0]\n";
 } else {
     #$ofile = *STDOUT;
-    print "usage: $0 -s file [-E engine] [-d] file\n"; 
+    print "usage: $0 -s file [-E engine] [-d] output_file\n"; 
     exit 1;
 }
 
