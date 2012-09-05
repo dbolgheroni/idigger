@@ -31,8 +31,8 @@ BEGIN {
     use File::Spec::Functions qw(rel2abs);
     use File::Basename qw(dirname);
 
-    my $path   = rel2abs( $0 );
-    our $dir = dirname( $path );
+    my $path   = rel2abs($0);
+    our $dir = dirname($path);
 }
 use lib $dir;
 
@@ -56,17 +56,33 @@ use Stock;
 #$curl->perform;
 
 # check for command line options
-our ($opt_d, $opt_s, $opt_E);
-getopts('ds:E:');
+our ($opt_D, $opt_h, $opt_s, $opt_E);
+getopts('Dhs:E:');
+
+sub help {
+    # always document changes here!
+    print <<EOH;
+usage: $0 [-D] [-h] [-e E] output
+  -D   don't download info from source (useful to debug)
+  -h   show this help message and exit
+  -e E specify which engine to use 
+EOH
+
+    exit 0;
+}
 
 # process command line options
+if ($opt_h) {
+    help;
+}
+
 my $ofile;
 if ($ARGV[0]) {
     open ($ofile, ">", $ARGV[0]) ||
         die "$0: can't create/write to $ARGV[0]\n";
 } else {
     #$ofile = *STDOUT;
-    print "usage: $0 -s file [-E engine] [-d] output_file\n"; 
+    help;
     exit 1;
 }
 
@@ -93,7 +109,7 @@ if (!$opt_E) {
     $Engine = $opt_E;
 }
 
-if ($opt_d) {
+if ($opt_D) {
     $Engine->fetch(@conf);
 }
 # end of processing command line options
