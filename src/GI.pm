@@ -52,9 +52,9 @@ sub fetch { # class method
 
         $stock = lc $stock;
         if ($ret == 0) {
-            print "$stock info downloaded OK\n";
+            Log->print("$stock info downloaded OK\n");
         } else {
-            print "$stock info download FAILED\n";
+            Log->print("$stock info download FAILED\n");
         }
     }
 }

@@ -40,14 +40,19 @@ use strict;
 use warnings;
 
 #use WWW::Curl::Easy;
-use Getopt::Std;
+use Getopt::Long;
 use CGI qw/:standard/;
 use Scalar::Util qw/looks_like_number/;
 
 # classes
 use Conf;
+use Log;
 use GI;
 use Stock;
+
+my $version = "0.1";
+
+Log->print("v$version\n");
 
 #my $curl = new WWW::Curl::Easy;
 #$curl->setopt(CURLOPT_URL, 'http://www.guiainvest.com.br/raiox/abcb4.aspx');
@@ -56,30 +61,30 @@ use Stock;
 #$curl->perform;
 
 # check for command line options
-our ($opt_D, $opt_h, $opt_s, $opt_E);
-getopts('Dhs:E:');
+our ($nodownload, $help, $stocklist, $engine);
+
+# 'Dhs:E:'
+my $opts = GetOptions("-D" => \$nodownload,
+                      "-h" => \$help,
+                      "-c=s" => \$stocklist,
+                      "-E=s" => \$engine);
 
 sub help {
     # always document changes here!
-    print <<EOH;
-usage: $0 [-D] [-h] [-e E] output
-  -D   don't download info from source (useful to debug)
-  -h   show this help message and exit
-  -e E specify which engine to use 
-EOH
+    Log->print("wrongs opts, please refer to documentation\n");
 
     exit 0;
 }
 
 # process command line options
-if ($opt_h) {
+if ($help) {
     help;
 }
 
 my $ofile;
 if ($ARGV[0]) {
     open ($ofile, ">", $ARGV[0]) ||
-        die "$0: can't create/write to $ARGV[0]\n";
+        die "can't create/write to $ARGV[0]\n";
 } else {
     #$ofile = *STDOUT;
     help;
@@ -87,11 +92,11 @@ if ($ARGV[0]) {
 }
 
 my (@conf, $conffile, $title);
-if (!$opt_s) {
-    print "$0: need to specify stock list\n";
+if (!$stocklist) {
+    Log->print("need to specify stock list\n");
     exit 1;
 } else {
-    $conffile = $opt_s;
+    $conffile = $stocklist;
     $title = $conffile;
 
     $title =~ s/.*\///;
@@ -102,14 +107,14 @@ if (!$opt_s) {
 }
 
 my $Engine;
-if (!$opt_E) {
-    print "$0: Engine not specified, using default (GI)\n";
+if (!$engine) {
+    Log->print("engine not specified, using default (GI)\n");
     $Engine = "GI";
 } else {
-    $Engine = $opt_E;
+    $Engine = $engine;
 }
 
-if ($opt_D) {
+if (!$nodownload) {
     $Engine->fetch(@conf);
 }
 # end of processing command line options
@@ -130,7 +135,7 @@ foreach my $stock (@conf) {
 
 # print to html
 print $ofile start_html('idigger');
-print $ofile h2($title);
+print $ofile h2(uc $title);
 
 # a little obscure date but it doesn't need an external module
 my @lt = localtime;
