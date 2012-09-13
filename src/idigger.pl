@@ -50,6 +50,8 @@ use Log;
 use GI;
 use Stock;
 
+my $version = "0.1";
+
 #my $curl = new WWW::Curl::Easy;
 #$curl->setopt(CURLOPT_URL, 'http://www.guiainvest.com.br/raiox/abcb4.aspx');
 #open (my $FILE, ">", "curl_output.txt");
@@ -69,6 +71,7 @@ sub help {
     # always document changes here!
     print <<EOH;
 usage: $0 [-h] [-D] [-e E] -c C output
+idigger v$version
   -h   this help
   -D   don't download info from source (useful to debug)
   -e E specify which engine to use (default: GI)
@@ -120,9 +123,6 @@ if (!$nodownload) {
     $Engine->fetch(@conf);
 }
 # end of processing command line options
-
-my $version = "0.1";
-Log->print("v$version\n");
 
 # instantiate every stock in conf file
 my @obj;
