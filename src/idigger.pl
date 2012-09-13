@@ -63,9 +63,9 @@ our ($nodownload, $help, $stocklist, $engine);
 
 # 'Dhs:E:'
 my $opts = GetOptions("-D" => \$nodownload,
-                      "-h" => \$help,
+                      "-E=s" => \$engine,
                       "-c=s" => \$stocklist,
-                      "-E=s" => \$engine);
+                      "-h" => \$help);
 
 sub help {
     # always document changes here!
@@ -74,7 +74,7 @@ usage: $0 [-h] [-D] [-e E] -c C output
 idigger v$version
   -h   this help
   -D   don't download info from source (useful to debug)
-  -e E specify which engine to use (default: GI)
+  -E E specify which engine to use (default: GI)
   -c C specify config file
 EOH
 
