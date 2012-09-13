@@ -50,10 +50,6 @@ use Log;
 use GI;
 use Stock;
 
-my $version = "0.1";
-
-Log->print("v$version\n");
-
 #my $curl = new WWW::Curl::Easy;
 #$curl->setopt(CURLOPT_URL, 'http://www.guiainvest.com.br/raiox/abcb4.aspx');
 #open (my $FILE, ">", "curl_output.txt");
@@ -71,7 +67,13 @@ my $opts = GetOptions("-D" => \$nodownload,
 
 sub help {
     # always document changes here!
-    Log->print("wrongs opts, please refer to documentation\n");
+    print <<EOH;
+usage: $0 [-h] [-D] [-e E] -c C output
+  -h   this help
+  -D   don't download info from source (useful to debug)
+  -e E specify which engine to use (default: GI)
+  -c C specify config file
+EOH
 
     exit 0;
 }
@@ -93,7 +95,7 @@ if ($ARGV[0]) {
 
 my (@conf, $conffile, $title);
 if (!$stocklist) {
-    Log->print("need to specify stock list\n");
+    print "need to specify stock list\n";
     exit 1;
 } else {
     $conffile = $stocklist;
@@ -108,7 +110,7 @@ if (!$stocklist) {
 
 my $Engine;
 if (!$engine) {
-    Log->print("engine not specified, using default (GI)\n");
+    print "engine not specified, using default (GI)\n";
     $Engine = "GI";
 } else {
     $Engine = $engine;
@@ -118,6 +120,9 @@ if (!$nodownload) {
     $Engine->fetch(@conf);
 }
 # end of processing command line options
+
+my $version = "0.1";
+Log->print("v$version\n");
 
 # instantiate every stock in conf file
 my @obj;
