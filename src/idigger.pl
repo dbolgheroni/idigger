@@ -191,6 +191,10 @@ my @pe_rotten;
 # negative P/E -> @pe_rotten
 # positive P/E -> @pe_ok
 foreach my $stock (@obj) {
+    if (!looks_like_number($stock->pe)) {
+        $stock->pe(-999);
+    } 
+
     if ($stock->pe > 0) {
         push @pe_ok, $stock;
     }

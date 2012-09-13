@@ -97,7 +97,9 @@ sub get_roe {
     my $stock = shift;
 
     my $roe = _get_id('lbRentabilidadePatrimonioLiquido3', $stock);
-    $roe =~ s/%//;
+    if ($roe) {
+        $roe =~ s/%//;
+    }
 
     return $roe;
 }
