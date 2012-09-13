@@ -140,7 +140,6 @@ foreach my $stock (@conf) {
 
 # print to html
 print $ofile start_html('idigger');
-print $ofile h2(uc $title);
 
 # a little obscure date but it doesn't need an external module
 my @lt = localtime;
