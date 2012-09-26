@@ -37,8 +37,7 @@ BEGIN {
     our @EXPORT = qw(&fetch &get_pe &get_pvb);
 }
 
-# downloads the stock info of the stocks passed as a parameter and
-# can be used with the LIST returned by init_stock_conf
+# downloads the stock info of the stocks passed as a parameter
 sub fetch { # class method
     my $class = shift;
     my @stock = @_;
