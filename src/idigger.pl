@@ -31,7 +31,7 @@ BEGIN {
     use File::Spec::Functions qw(rel2abs);
     use File::Basename qw(dirname);
 
-    my $path   = rel2abs($0);
+    my $path = rel2abs($0);
     our $dir = dirname($path);
 }
 use lib $dir;
