@@ -41,7 +41,7 @@ opts.add_argument("output",
         help="the filename for the HTML output")
 opts.add_argument("-D",
         help="don't dowload info from source (useful to debug)",
-        action="store_true"); # flag (option without value)
+        action="store_true")
 opts.add_argument("-e", 
         help="specify which engine to use")
 args = opts.parse_args()
