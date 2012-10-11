@@ -26,19 +26,29 @@ class GuiaInvest:
         else:
             print("OK")
 
-
     def extract_pe(stock):
-        pe = -999
+        value = __class__.__extract_id(stock,
+                'lbPrecoLucroAtual')
+        return value
+
+    def extract_roe(stock):
+        value = __class__.__extract_id(stock,
+                'lbRentabilidadePatrimonioLiquido3')
+        return value
+
+    def __extract_id(stock, v):
+        value = -999
+    
         path = os.path.join(__class__.rel, stock + ".aspx")
         f = open(path, encoding='iso-8859-1')
         s = f.read()
         
-        pattern = re.compile(r'lbPrecoLucroAtual">(?P<pe>(-)?(\d)+,(\d)+)')
+        regex = v + r'">(?P<value>(-)?(\d)+,(\d)+)'
+        pattern = re.compile(regex)
         match = pattern.search(s)
         if match:
-            r = match.group('pe')
-            pe = float(re.sub(r',', r'.', r))
-
+            r = match.group('value')
+            value = float(re.sub(r',', r'.', r))
+    
         f.close()
-        return pe
-
+        return value

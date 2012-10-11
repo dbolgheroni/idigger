@@ -65,7 +65,10 @@ for s in conf:
     # extract P/E from raw data
     obj.set_pe(gi.GuiaInvest.extract_pe(s.lower())) 
 
-# sort based on P/E
+    # extract P/VB from raw data
+    obj.set_roe(gi.GuiaInvest.extract_roe(s.lower())) 
+
+# sort P/E
 #
 # negative P/E -> pe_rotten
 # positive P/E -> pe_ok
@@ -90,10 +93,40 @@ for s in sector:
 
 pe_ok.sort(key=lambda s: s.get_pe())
 pe_rotten.sort(key=lambda s: s.get_pe(), reverse=True)
-sector = pe_ok + pe_rotten
+pe = pe_ok + pe_rotten
 
+for i, s in enumerate(pe, start=1):
+    s.set_pe_order(i)
+
+# sort ROE
+roe = sector
+roe.sort(key=lambda s: s.get_roe())
+
+for i, s in enumerate(roe, start=1):
+    s.set_roe_order(i)
+
+# sort Greenblatt
 for s in sector:
-    print(s.get_code().ljust(9), str(s.get_pe()).rjust(6))
+    s.set_greenblatt_order(s.get_pe_order() + s.get_roe_order())
+
+sector.sort(key=lambda s: s.get_greenblatt_order())
+
+# print header
+print("Ação".ljust(9),
+      "P/L".rjust(6),
+      #"ordem P/L".rjust(9),
+      "ROE".rjust(6),
+      #"ordem ROE".rjust(9),
+      "ordem Greenblatt".rjust(16))
+
+# print stocks
+for s in sector:
+    print(s.get_code().ljust(9),
+          str(s.get_pe()).rjust(6),
+          #str(s.get_pe_order()).rjust(9),
+          str(s.get_roe()).rjust(6),
+          #str(s.get_roe_order()).rjust(9),
+          str(s.get_greenblatt_order()).rjust(16))
 
 # download rawdata related to stocks
 #for c in conf:
