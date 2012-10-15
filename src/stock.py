@@ -5,41 +5,53 @@ class Stock:
         self.__code = c
 
     # code attribute
-    def get_code(self):
+    @property
+    def code(self):
         return self.__code
 
-    def set_code(self, c):
+    @code.setter
+    def code(self, c):
         self.__code = c
 
     # real attributes
-    def get_pe(self):
+    @property
+    def pe(self):
         return self.__pe
 
-    def set_pe(self, v):
+    @pe.setter
+    def pe(self, v):
         self.__pe = v
 
-    def get_roe(self):
+    @property
+    def roe(self):
         return self.__roe
 
-    def set_roe(self, v):
+    @roe.setter
+    def roe(self, v):
         self.__roe = v
 
     # order attributes
-    def get_pe_order(self):
+    @property
+    def pe_order(self):
         return self.__pe_order
 
-    def set_pe_order(self, v):
+    @pe_order.setter
+    def pe_order(self, v):
         self.__pe_order = v
 
-    def get_roe_order(self):
+    @property
+    def roe_order(self):
         return self.__roe_order
 
-    def set_roe_order(self, v):
+    @roe_order.setter
+    def roe_order(self, v):
         self.__roe_order = v
 
-    def get_greenblatt_order(self):
+    @property
+    def greenblatt_order(self):
         return self.__greenblatt_order
 
-    def set_greenblatt_order(self, v):
+    @greenblatt_order.setter
+    def greenblatt_order(self, v):
         self.__greenblatt_order = v
 
