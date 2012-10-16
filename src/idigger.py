@@ -27,7 +27,6 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
-import urllib
 
 # import idigger modules
 import gi
