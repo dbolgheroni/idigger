@@ -9,18 +9,18 @@ class GuiaInvest:
     relat = os.path.join(os.environ['HOME'], ".idigger", "rawdata")
 
     # class methods
-    def fetch(c):
+    @classmethod
+    def fetch(cls, c):
         """fetch raw data to extract info needed by other classes"""
 
         print("downloading", c.rjust(6), end=" stock info... ")
 
         # define path for local file
-        absol = os.path.join(__class__.relat,
-                             ''.join([c.lower(), ".aspx"]))
+        absol = os.path.join(cls.relat, c.lower() + ".aspx")
 
         # define URL
         baseurl = "http://guiainvest.com.br/raiox/"
-        url = ''.join([baseurl, c.lower(), '.aspx']) 
+        url = baseurl + c.lower() + '.aspx' 
 
         # download URL
         try:
@@ -32,34 +32,37 @@ class GuiaInvest:
         
         # write file
         try:
-            ourl = open(absol, 'w')
+            ourl = open(absol, "w")
         except IOError:
             print(" (couldn't write to local file)")
         else:
             print()
 
-        stock = iurl.read().decode('iso-8859-1')
+        stock = iurl.read().decode("iso-8859-1")
         ourl.write(stock)
 
         # close descriptors
         iurl.close()
         ourl.close()
 
-    def extract_pe(stock):
-        value = __class__.__extract_id(stock,
+    @classmethod
+    def extract_pe(cls, stock):
+        value = cls.__extract_id(stock,
                 'lbPrecoLucroAtual')
         return value
 
-    def extract_roe(stock):
-        value = __class__.__extract_id(stock,
+    @classmethod
+    def extract_roe(cls, stock):
+        value = cls.__extract_id(stock,
                 'lbRentabilidadePatrimonioLiquido3')
         return value
 
-    def __extract_id(stock, v):
+    @classmethod
+    def __extract_id(cls, stock, v):
         value = -999
     
-        path = os.path.join(__class__.relat, stock + ".aspx")
-        f = open(path, encoding='iso-8859-1')
+        path = os.path.join(cls.relat, stock + ".aspx")
+        f = open(path, encoding="iso-8859-1")
         s = f.read()
         
         regex = v + r'">(?P<value>(-)?(\d)+,(\d)+)'
