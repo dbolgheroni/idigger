@@ -3,28 +3,47 @@ from this provider."""
 
 import os
 import re
+import urllib.request
 
 class GuiaInvest:
-    rel = os.path.join(os.environ['HOME'], ".idigger", "rawdata")
+    relat = os.path.join(os.environ['HOME'], ".idigger", "rawdata")
 
     # class methods
     def fetch(c):
         """fetch raw data to extract info needed by other classes"""
 
-
         print("downloading", c.rjust(6), end=" stock info... ")
 
-        rawstockdata = os.path.join(__class__.rel, c.lower() + ".aspx")
-        command = "curl -s 'http://www.guiainvest.com.br/raiox/" \
-                + c + ".aspx' > " + rawstockdata
+        # define path for local file
+        absol = os.path.join(__class__.relat,
+                             ''.join([c.lower(), ".aspx"]))
 
-        # TODO: check for curl
-        
-        dl_status = os.system(command)
-        if dl_status:
-            print("FAILED")
+        # define URL
+        baseurl = "http://guiainvest.com.br/raiox/"
+        url = ''.join([baseurl, c.lower(), '.aspx']) 
+
+        # download URL
+        try:
+            iurl = urllib.request.urlopen(url)
+        except URLError:
+            print(end="FAILED")
         else:
-            print("OK")
+            print(end="OK")
+        
+        # write file
+        try:
+            ourl = open(absol, 'w')
+        except IOError:
+            print(" (couldn't write to local file)")
+        else:
+            print()
+
+        stock = iurl.read().decode('iso-8859-1')
+        ourl.write(stock)
+
+        # close descriptors
+        iurl.close()
+        ourl.close()
 
     def extract_pe(stock):
         value = __class__.__extract_id(stock,
@@ -39,7 +58,7 @@ class GuiaInvest:
     def __extract_id(stock, v):
         value = -999
     
-        path = os.path.join(__class__.rel, stock + ".aspx")
+        path = os.path.join(__class__.relat, stock + ".aspx")
         f = open(path, encoding='iso-8859-1')
         s = f.read()
         
