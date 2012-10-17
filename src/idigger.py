@@ -54,6 +54,11 @@ f = open(args.conf)
 conf = tuple(f.read().splitlines())
 f.close()
 
+# -D argument
+if not args.D:
+    for c in conf:
+        gi.GuiaInvest.fetch(c)
+
 # instantiate stocks
 sector = []
 for s in conf:
@@ -145,6 +150,3 @@ for s in sector:
           str(s.roe_order).rjust(9),
           str(s.greenblatt_order).rjust(16))
 
-# download rawdata related to stocks
-#for c in conf:
-#    gi.GuiaInvest.fetch(c)
