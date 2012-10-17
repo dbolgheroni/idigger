@@ -5,7 +5,7 @@ import os
 import re
 import urllib.request
 
-relat = os.path.join(os.environ['HOME'], ".idigger", "rawdata")
+_relat = os.path.join(os.environ['HOME'], ".idigger", "rawdata")
 
 # class methods
 def fetch(c):
@@ -14,7 +14,7 @@ def fetch(c):
     print("downloading", c.rjust(6), end=" stock info... ")
 
     # define path for local file
-    absol = os.path.join(relat, c.lower() + ".aspx")
+    absol = os.path.join(_relat, c.lower() + ".aspx")
 
     # define URL
     baseurl = "http://guiainvest.com.br/raiox/"
@@ -56,7 +56,7 @@ def extract_roe(stock):
 def __extract_id(stock, v):
     value = -999
 
-    path = os.path.join(relat, stock + ".aspx")
+    path = os.path.join(_relat, stock + ".aspx")
     f = open(path, encoding="iso-8859-1")
     s = f.read()
     
