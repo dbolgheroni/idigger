@@ -1,10 +1,20 @@
-"""stock module contains classes to manipulate data related to stocks"""
+"""stock module: contains the Stock class."""
 
 class Stock:
+    """Stock class contains attributes to handle stock specific data,
+    such as stock instances, sorting methods, etc.
+
+    """
+
+    #
+    # class methods
+    #
+
     # sort from low to high
     @classmethod
     def sort_pe(cls, sector):
-        """sort sector as the diagram below
+        """Sort stocks based on P/E and assign order as an instance
+        attribute for each stock.
 
         |      pe           |
         | pe_ok | pe_rotten |
@@ -32,7 +42,8 @@ class Stock:
     # sort from high to low
     @classmethod
     def sort_roe(cls, sector):
-        """sort ROE as the diagram below
+        """Sort stocks based on ROE and assign order as an instance
+        attribute for each stock.
 
         |       roe           |
         | roe_ok | roe_rotten |
@@ -60,7 +71,9 @@ class Stock:
     # sort from low to high
     @classmethod
     def sort_greenblatt(cls, sector):
-        """sort Greenblatt order as the diagram below
+        """Sort stocks based on Greenblatt order, which, by itself, is
+        based on P/E and ROE orders, and assign order as an instance
+        attribute for each stock.
 
         | greenblatt |
         0------------>
@@ -72,6 +85,10 @@ class Stock:
             s.greenblatt_order = s.pe_order + s.roe_order
 
         sector.sort(key=lambda s: s.greenblatt_order)
+
+    #
+    # instance methods
+    #
 
     def __init__(self, c):
         self.__code = c
