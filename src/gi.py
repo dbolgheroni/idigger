@@ -1,4 +1,4 @@
-"""gi (GuiaInvest) module: contains classes to manipulate data obtained
+"""gi (GuiaInvest) module: contains functions to handle data obtained
 from this provider."""
 
 import os
