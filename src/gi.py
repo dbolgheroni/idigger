@@ -9,7 +9,7 @@ _relat = os.path.join(os.environ['HOME'], ".idigger", "rawdata")
 
 # class methods
 def fetch(c):
-    """fetch raw data to extract info needed by other classes"""
+    """Fetch raw data to extract info needed by other classes."""
 
     print("downloading", c.rjust(6), end=" stock info... ")
 
@@ -44,11 +44,13 @@ def fetch(c):
     ourl.close()
 
 def extract_pe(stock):
+    """Extract P/E value from raw data obtained by fetch()."""
     value = __extract_id(stock,
             'lbPrecoLucroAtual')
     return value
 
 def extract_roe(stock):
+    """Extract ROE value from raw data obtained by fetch()."""
     value = __extract_id(stock,
             'lbRentabilidadePatrimonioLiquido3')
     return value
