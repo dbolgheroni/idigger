@@ -57,7 +57,7 @@ f.close()
 # -D argument
 if not args.D:
     for c in conf:
-        gi.GuiaInvest.fetch(c)
+        gi.fetch(c)
 
 # instantiate stocks
 sector = []
@@ -67,71 +67,19 @@ for s in conf:
     sector.append(obj)
 
     # extract P/E from raw data
-    obj.pe = gi.GuiaInvest.extract_pe(s.lower())
+    obj.pe = gi.extract_pe(s.lower())
 
     # extract P/VB from raw data
-    obj.roe = gi.GuiaInvest.extract_roe(s.lower())
+    obj.roe = gi.extract_roe(s.lower())
 
-# sort P/E
-#
-# negative P/E -> pe_rotten
-# positive P/E -> pe_ok
-#
-# |      pe           | (1)
-# | pe_ok | pe_rotten | 
-# 0------->----------->
-#         +           - 
-pe_ok = []
-pe_rotten = []
+# sort P/E order
+stock.Stock.sort_pe(sector)
 
-for s in sector:
-    if s.pe >= 0:
-        pe_ok.append(s)
-    else:
-        pe_rotten.append(s)
-
-pe_ok.sort(key=lambda s: s.pe)
-pe_rotten.sort(key=lambda s: s.pe, reverse=True)
-pe = pe_ok + pe_rotten
-
-for i, s in enumerate(pe, start=1):
-    s.pe_order = i
-
-# sort ROE
-#
-# negative ROE -> roe_rotten
-# positive ROE -> roe_ok
-#
-# |       roe           | (1)
-# | roe_ok | roe_rotten | 
-# <--------0------------->
-# +                      - 
-roe_ok = []
-roe_rotten = []
-
-for s in sector:
-    if s.roe >= 0:
-        roe_ok.append(s)
-    else:
-        roe_rotten.append(s)
-
-roe_ok.sort(key=lambda s: s.roe, reverse=True)
-roe_rotten.sort(key=lambda s: s.roe, reverse=True)
-roe = roe_ok + roe_rotten
-
-for i, s in enumerate(roe, start=1):
-    s.roe_order = i
+# sort ROE order
+stock.Stock.sort_roe(sector)
 
 # sort Greenblatt
-#
-# | greenblatt |
-# 0------------>
-#              +
-
-for s in sector:
-    s.greenblatt_order = s.pe_order + s.roe_order
-
-sector.sort(key=lambda s: s.greenblatt_order)
+stock.Stock.sort_greenblatt(sector)
 
 # print header
 print("Ação".ljust(9),
