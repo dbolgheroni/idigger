@@ -30,7 +30,8 @@ import argparse
 
 # import idigger modules
 import gi
-import stock
+from show import *
+from stock import *
 
 opts = argparse.ArgumentParser()
 
@@ -50,20 +51,32 @@ args = opts.parse_args()
 version = "0.1"
 
 # read stocks from stocklist
-f = open(args.conf)
-conf = tuple(f.read().splitlines())
-f.close()
+try:
+    f = open(args.conf)
+except IOError:
+    print("couldn't open %s (check for permissions)" % args.conf)
+    exit()
+else:
+    conf = tuple(f.read().splitlines())
+    f.close()
 
 # -D argument
 if not args.D:
     for c in conf:
         gi.fetch(c)
 
+# open file for output
+try:
+    output = open(args.output, "w")
+except IOError:
+    print("couldn't open %s (check for permissions)" % args.output)
+    exit()
+
 # instantiate stocks
 sector = []
 for s in conf:
     # "constructor"
-    obj = stock.Stock(s) 
+    obj = Stock(s) 
     sector.append(obj)
 
     # extract P/E from raw data
@@ -73,28 +86,13 @@ for s in conf:
     obj.roe = gi.extract_roe(s.lower())
 
 # sort P/E order
-stock.Stock.sort_pe(sector)
+Stock.sort_pe(sector)
 
 # sort ROE order
-stock.Stock.sort_roe(sector)
+Stock.sort_roe(sector)
 
-# sort Greenblatt
-stock.Stock.sort_greenblatt(sector)
+# sort Greenblatt order
+Stock.sort_greenblatt(sector)
 
-# print header
-print("Ação".ljust(9),
-      "P/L".rjust(6),
-      "ordem P/L".rjust(9),
-      "ROE".rjust(6),
-      "ordem ROE".rjust(9),
-      "ordem Greenblatt".rjust(16))
-
-# print stocks
-for s in sector:
-    print(s.code.ljust(9),
-          str(s.pe).rjust(6),
-          str(s.pe_order).rjust(9),
-          str(s.roe).rjust(6),
-          str(s.roe_order).rjust(9),
-          str(s.greenblatt_order).rjust(16))
-
+# show results
+show(sector, output, driver="html")
