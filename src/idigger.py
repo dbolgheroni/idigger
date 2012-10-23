@@ -46,10 +46,6 @@ opts.add_argument("-e",
         help="specify which engine to use")
 args = opts.parse_args()
 
-#print(args.output) # automagically sets output
-
-version = "0.1"
-
 # read stocks from stocklist
 try:
     f = open(args.conf)
