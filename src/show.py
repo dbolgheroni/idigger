@@ -1,5 +1,7 @@
 """show module: contains functions to print results/analysis."""
 
+import datetime
+
 # internal functions to handle HTML
 def _start_html():
     return('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 '
@@ -9,10 +11,17 @@ def _end_html():
     return "</table></body></html>"
 
 def _title(t):
-    return('<head>'
-           '<meta http-equiv="Content-Type" ' 
-           'content="text/html;charset=utf-8">'
-           '<title>%s</title></head><body><h2>%s</h2>' % (t, t))
+    d = datetime.date.today()
+    today = d.strftime("%d/%m/%y")
+
+    head = ('<head>'
+            '<meta http-equiv="Content-Type" ' 
+            'content="text/html;charset=utf-8">'
+            '</head>')
+    title = '<title>%s</title></head><body>' % t
+    update = '<p>&Uacute;ltima atualiza&ccedil;&atilde;o: %s</p>' % today
+
+    return head + title + update
  
 def _table_hdr(cells):
     row = '<table border=1><tr bgcolor="#c0c0c0">'
