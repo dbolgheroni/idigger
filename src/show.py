@@ -11,15 +11,15 @@ def _end_html():
     return "</table></body></html>"
 
 def _title(t):
-    d = datetime.date.today()
-    today = d.strftime("%d/%m/%y")
+    d = datetime.datetime.now()
+    now = d.strftime("%d/%m/%Y %H:%M")
 
     head = ('<head>'
             '<meta http-equiv="Content-Type" ' 
             'content="text/html;charset=utf-8">'
             '</head>')
     title = '<title>%s</title></head><body>' % t
-    update = '<p>&Uacute;ltima atualiza&ccedil;&atilde;o: %s</p>' % today
+    update = '<p>&Uacute;ltima atualiza&ccedil;&atilde;o: %s</p>' % now
 
     return head + title + update
  
