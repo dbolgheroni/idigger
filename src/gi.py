@@ -5,13 +5,15 @@ import os
 import re
 import urllib.request
 
+from log import *
+
 _relat = os.path.join(os.environ['HOME'], ".idigger", "rawdata")
 
 # class methods
 def fetch(c):
     """Fetch raw data to extract info needed by other classes."""
 
-    print("downloading", c.rjust(6), end=" stock info... ")
+    log("downloading", c.rjust(6), end=" stock info... ")
 
     # define path for local file
     absol = os.path.join(_relat, c.lower() + ".aspx")
@@ -24,17 +26,17 @@ def fetch(c):
     try:
         iurl = urllib.request.urlopen(url)
     except URLError:
-        print(end="FAILED")
+        log(end="FAILED", prefix=False)
     else:
-        print(end="OK")
+        log(end="OK", prefix=False)
 
     # write file
     try:
         ourl = open(absol, "w")
     except IOError:
-        print(" (couldn't write to local file)")
+        log(" (couldn't write to local file)", prefix=False)
     else:
-        print()
+        log(prefix=False)
 
     stock = iurl.read().decode("iso-8859-1")
     ourl.write(stock)

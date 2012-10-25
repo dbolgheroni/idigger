@@ -2,6 +2,8 @@
 
 import datetime
 
+from log import *
+
 # internal functions to handle HTML
 def _start_html():
     return('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 '
@@ -10,16 +12,16 @@ def _start_html():
 def _end_html():
     return "</table></body></html>"
 
-def _title(t):
-    d = datetime.datetime.now()
-    now = d.strftime("%d/%m/%Y %H:%M")
+def _title(t, date):
+    # format in output isn't the same as in log, so redefine
+    now = date.strftime("%d/%m/%Y %H:%M")
 
     head = ('<head>'
             '<meta http-equiv="Content-Type" ' 
             'content="text/html;charset=utf-8">'
             '</head>')
     title = '<title>%s</title></head><body>' % t
-    update = '<p>&Uacute;ltima atualiza&ccedil;&atilde;o: %s</p>' % now
+    update = '<p><b>&Uacute;ltima atualiza&ccedil;&atilde;o:</b> %s</p>' % now
 
     return head + title + update
  
@@ -48,7 +50,7 @@ def _table_row(cells):
     return row
 
 # interface
-def show(sector, output, driver="html", title="idigger"):
+def show(sector, output, date, driver="html", title="idigger"):
     """Output the results in a table.
 
     There are optional parameters defined, which are:
@@ -61,7 +63,9 @@ def show(sector, output, driver="html", title="idigger"):
     """
 
     if driver == "text": 
-        # print header
+        log("generating text output")
+
+        # table header
         print("Ação".ljust(9),
               "P/L".rjust(6),
               #"ordem P/L".rjust(9),
@@ -69,7 +73,7 @@ def show(sector, output, driver="html", title="idigger"):
               #"ordem ROE".rjust(9),
               #"ordem Greenblatt".rjust(16), file=output)
 
-        # print stocks
+        # rows
         for s in sector:
             print(s.code.ljust(9),
                   str(s.pe).rjust(6),
@@ -79,14 +83,20 @@ def show(sector, output, driver="html", title="idigger"):
                   #str(s.greenblatt_order).rjust(16), file=output)
 
     if driver == "html":
-        print(_start_html(), file=output)
-        print(_title(title), file=output)
+        log("generating HTML output")
 
+        # html header
+        print(_start_html(), file=output)
+        print(_title(title, date), file=output)
+
+        # table header
         hdr = ["Ações", "P/L", "ROE"]
         print(_table_hdr(hdr), file=output)
 
+        # rows
         for s in sector:
             row = [s.code, s.pe, s.roe]
             print(_table_row(row), file=output)
         
+        # end html
         print(_end_html(), file=output)

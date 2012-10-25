@@ -27,9 +27,11 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import argparse
+import datetime
 
 # import idigger modules
 import gi
+from log import *
 from show import *
 from stock import *
 
@@ -46,12 +48,20 @@ opts.add_argument("-e",
         help="specify which engine to use")
 args = opts.parse_args()
 
+# presentation
+version = "0.beta"
+
+dateobj = datetime.datetime.now()
+now = dateobj.strftime("%Y%m%d %H:%M:%S %w")
+log("version:", version)
+log("run:", now)
+
 # read stocks from stocklist
 try:
     f = open(args.conf)
 except IOError:
-    print("couldn't open %s (check for permissions)" % args.conf)
-    exit()
+    log("couldn't open %s (check for permissions)" % args.conf)
+    exit(1)
 else:
     conf = tuple(f.read().splitlines())
     f.close()
@@ -60,13 +70,15 @@ else:
 if not args.D:
     for c in conf:
         gi.fetch(c)
+else:
+    log("dummy mode selected, won't download files")
 
 # open file for output
 try:
     output = open(args.output, "w")
 except IOError:
-    print("couldn't open %s (check for permissions)" % args.output)
-    exit()
+    log("couldn't open %s (check for permissions)" % args.output)
+    exit(1)
 
 # instantiate stocks
 sector = []
@@ -91,4 +103,4 @@ Stock.sort_roe(sector)
 Stock.sort_greenblatt(sector)
 
 # show results
-show(sector, output, driver="html")
+show(sector, output, dateobj, driver="html")
