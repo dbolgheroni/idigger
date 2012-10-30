@@ -14,7 +14,7 @@ def _end_html():
 
 def _title(t, date):
     # format in output isn't the same as in log, so redefine
-    now = date.strftime("%d/%m/%Y %H:%M")
+    now = date.strftime("%d/%m/%Y %H:%M:%S")
 
     head = ('<head>'
             '<meta http-equiv="Content-Type" ' 

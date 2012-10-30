@@ -48,13 +48,16 @@ opts.add_argument("-e",
         help="specify which engine to use")
 args = opts.parse_args()
 
+# some definitions
+log_date_format = "%Y%m%d %H:%M:%S"
+
 # presentation
 version = "0.beta"
-
-dateobj = datetime.datetime.now()
-now = dateobj.strftime("%Y%m%d %H:%M:%S %w")
+start_time = datetime.datetime.now()
+now = start_time.strftime(log_date_format)
 log("version:", version)
-log("run:", now)
+log("start:", now)
+log("conf file:", args.conf)
 
 # read stocks from stocklist
 try:
@@ -103,4 +106,10 @@ Stock.sort_roe(sector)
 Stock.sort_greenblatt(sector)
 
 # show results
-show(sector, output, dateobj, driver="html")
+gen_time = datetime.datetime.now()
+now = gen_time.strftime(log_date_format)
+log("output generated time:", now)
+show(sector, output, gen_time, driver="html")
+
+total_time = gen_time - start_time
+log("total time:", "%d s" % total_time.seconds)
