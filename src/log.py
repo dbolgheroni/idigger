@@ -3,7 +3,7 @@ sense) output, instead of using the more complex 'logging' module."""
 
 # variable number of arguments
 def log(*pos, **keyw):
-    """ Print messages to console. Emulates 'print' function (as with
+    """Print messages to console. Emulates 'print' function (as with
     end=).
     
     """
