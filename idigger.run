@@ -5,56 +5,53 @@
 #
 # Typically, a single conf file contains only related stocks since,
 # historically, it doesn't make sense to compare the values idigger
-# provides between all stocks available. eACH INVESTOR HAS ITS OWN
+# provides between all stocks available. EACH INVESTOR HAS ITS OWN
 # CRITERIA.
 #
 # This script is just a reference to be modified for a specific need.  
 
-echo "===> smll.conf"
-src/idigger.pl -c conf/BRA/smll.conf publish/smll.html 
+LC_CTYPE="en_US.UTF-8"
+export LC_CTYPE
 
-#echo "===> energ.conf"
-#src/idigger.pl -c conf/BRA/energ.conf publish/energ.html 
+echo "===> ICON"
+/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/icon.conf public_html/icon.html
 
-#echo "===> financ.conf"
-#src/idigger.pl -c conf/BRA/financ.conf publish/financ.html 
+echo
 
-#echo "===> imob.conf"
-#src/idigger.pl -c conf/BRA/imob.conf publish/imob.html 
+echo "===> IEE"
+/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/iee.conf public_html/iee.html
 
-#echo "===> ind.conf"
-#src/idigger.pl -c conf/BRA/ind.conf publish/ind.html 
+echo
 
-#echo "===> logist.conf"
-#src/idigger.pl -c conf/BRA/logist.conf publish/logist.html 
+echo "===> IFNC"
+/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/ifnc.conf public_html/ifnc.html
 
-#echo "===> miner.conf"
-#src/idigger.pl -c conf/BRA/miner.conf publish/miner.html 
+echo
 
-#echo "===> outr.conf"
-#src/idigger.pl -c conf/BRA/outr.conf publish/outr.html 
+echo "===> IMAT"
+/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/imat.conf public_html/imat.html
 
-#echo "===> papel.conf"
-#src/idigger.pl -c conf/BRA/papel.conf publish/papel.html 
+echo
 
-#echo "===> petrol.conf"
-#src/idigger.pl -c conf/BRA/petrol.conf publish/petrol.html 
+echo "===> IMOB"
+/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/imob.conf public_html/imob.html
 
-#echo "===> petroq.conf"
-#src/idigger.pl -c conf/BRA/petroq.conf publish/petroq.html 
+echo
 
-#echo "===> saude.conf"
-#src/idigger.pl -c conf/BRA/saude.conf publish/saude.html 
+echo "===> INDX"
+/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/indx.conf public_html/indx.html
 
-#echo "===> siderur.conf"
-#src/idigger.pl -c conf/BRA/siderur.conf publish/siderur.html 
+echo
 
-#echo "===> tecno.conf"
-#src/idigger.pl -c conf/BRA/tecno.conf publish/tecno.html 
+echo "===> MLCX"
+/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/mlcx.conf public_html/mlcx.html
 
-#echo "===> tele.conf"
-#src/idigger.pl -c conf/BRA/tele.conf publish/tele.html 
+echo
 
-#echo "===> varej.conf"
-#src/idigger.pl -c conf/BRA/varej.conf publish/varej.html 
+echo "===> SMLL"
+/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/smll.conf public_html/smll.html
 
+echo
+
+echo "===> UTIL"
+/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/util.conf public_html/util.html
