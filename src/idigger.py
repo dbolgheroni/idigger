@@ -28,9 +28,11 @@
 
 import argparse
 import datetime
+import os
 
 # import idigger modules
 import gi
+from idiggerconf import *
 from log import *
 from show import *
 from stock import *
@@ -48,7 +50,7 @@ opts.add_argument("-e",
         help="specify which engine to use")
 args = opts.parse_args()
 
-# some definitions
+# local definitions
 log_date_format = "%Y%m%d %H:%M:%S"
 
 # presentation
@@ -68,6 +70,15 @@ except IOError:
 else:
     conf = tuple(f.read().splitlines())
     f.close()
+
+# create temporary dirs
+if not (os.path.exists(tmpdir)):
+    try:
+        log("required temporary directories don't exist, creating")
+        os.makedirs(tmpdir)
+    except OSError:
+        log("can't create temporary dirs, quitting")
+        exit(1)
 
 # -D argument
 if not args.D:
