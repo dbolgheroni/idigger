@@ -10,48 +10,17 @@
 #
 # This script is just a reference to be modified for a specific need.  
 
+# add new conf files here (without ".conf")
+conf="icon iee ifnc imat imob indx mlcx smll util"
+
 LC_CTYPE="en_US.UTF-8"
 export LC_CTYPE
 
-echo "===> ICON"
-/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/icon.conf public_html/icon.html
+for c in $conf; do
+    # convert title to upper case
+    title=`echo $c | tr "[:lower:]" "[:upper:]"`
 
-echo
-
-echo "===> IEE"
-/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/iee.conf public_html/iee.html
-
-echo
-
-echo "===> IFNC"
-/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/ifnc.conf public_html/ifnc.html
-
-echo
-
-echo "===> IMAT"
-/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/imat.conf public_html/imat.html
-
-echo
-
-echo "===> IMOB"
-/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/imob.conf public_html/imob.html
-
-echo
-
-echo "===> INDX"
-/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/indx.conf public_html/indx.html
-
-echo
-
-echo "===> MLCX"
-/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/mlcx.conf public_html/mlcx.html
-
-echo
-
-echo "===> SMLL"
-/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/smll.conf public_html/smll.html
-
-echo
-
-echo "===> UTIL"
-/usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/util.conf public_html/util.html
+    echo "===> $title"
+    /usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/$c.conf public_html/$c.html 
+    echo
+done
