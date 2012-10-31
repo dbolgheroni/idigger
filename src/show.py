@@ -90,12 +90,16 @@ def show(sector, output, date, driver="html", title="idigger"):
         print(_title(title, date), file=output)
 
         # table header
-        hdr = ["Ações", "P/L", "ROE"]
+        #hdr = ["Ações", "P/L", "ROE"]
+        hdr = ["Ações", "P/L", "ROE",
+               "ordem P/L", "ordem ROE", "ordem Greenblatt"]
         print(_table_hdr(hdr), file=output)
 
         # rows
         for s in sector:
-            row = [s.code, s.pe, s.roe]
+            #row = [s.code, s.pe, s.roe]
+            row = [s.code, s.pe, s.roe,
+                   s.pe_order, s.roe_order, s.greenblatt_order]
             print(_table_row(row), file=output)
         
         # end html
