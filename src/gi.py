@@ -5,22 +5,23 @@ import os
 import re
 import urllib.request
 
+from idiggerconf import *
 from log import *
 
-_relat = os.path.join(os.environ['HOME'], ".idigger", "rawdata")
+# local definitions
+_baseurl = "http://guiainvest.com.br/raiox/"
 
-# class methods
+# interface
 def fetch(c):
-    """Fetch raw data to extract info needed by other classes."""
+    """Fetch files to extract info needed by other classes."""
 
     log("downloading", c.rjust(6), end=" stock info... ")
 
     # define path for local file
-    absol = os.path.join(_relat, c.lower() + ".aspx")
+    stockfile = os.path.join(tmpdir, c.lower() + ".aspx")
 
     # define URL
-    baseurl = "http://guiainvest.com.br/raiox/"
-    url = baseurl + c.lower() + '.aspx' 
+    url = _baseurl + c.lower() + '.aspx' 
 
     # download URL
     try:
@@ -32,7 +33,7 @@ def fetch(c):
 
     # write file
     try:
-        ourl = open(absol, "w")
+        ourl = open(stockfile, "w")
     except IOError:
         log(" (couldn't write to local file)", prefix=False)
     else:
@@ -53,8 +54,9 @@ def extract_roe(stock):
     """Extract ROE value. Returns 'None' if not found."""
     return __extract_id(stock, 'lbRentabilidadePatrimonioLiquido3')
 
+# internal functions
 def __extract_id(stock, v):
-    path = os.path.join(_relat, stock + ".aspx")
+    path = os.path.join(tmpdir, stock + ".aspx")
     f = open(path, encoding="iso-8859-1")
     s = f.read()
     
