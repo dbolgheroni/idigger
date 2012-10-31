@@ -88,13 +88,19 @@ sector = []
 for s in conf:
     # "constructor"
     obj = Stock(s) 
-    sector.append(obj)
 
-    # extract P/E from raw data
+    # extract P/E from file
     obj.pe = gi.extract_pe(s.lower())
+    if not obj.pe or obj.pe < 0:
+        continue
 
-    # extract P/VB from raw data
+    # extract P/VB from file
     obj.roe = gi.extract_roe(s.lower())
+    if not obj.roe or obj.pe < 0:
+        continue
+
+    # only instantiate "good" stocks (with valid non-negative values)
+    sector.append(obj)
 
 # sort P/E order
 Stock.sort_pe(sector)

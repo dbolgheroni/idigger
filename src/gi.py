@@ -46,20 +46,14 @@ def fetch(c):
     ourl.close()
 
 def extract_pe(stock):
-    """Extract P/E value from raw data obtained by fetch()."""
-    value = __extract_id(stock,
-            'lbPrecoLucroAtual')
-    return value
+    """Extract P/E value. Returns 'None' if not found."""
+    return __extract_id(stock, 'lbPrecoLucroAtual')
 
 def extract_roe(stock):
-    """Extract ROE value from raw data obtained by fetch()."""
-    value = __extract_id(stock,
-            'lbRentabilidadePatrimonioLiquido3')
-    return value
+    """Extract ROE value. Returns 'None' if not found."""
+    return __extract_id(stock, 'lbRentabilidadePatrimonioLiquido3')
 
 def __extract_id(stock, v):
-    value = -999
-
     path = os.path.join(_relat, stock + ".aspx")
     f = open(path, encoding="iso-8859-1")
     s = f.read()
@@ -70,6 +64,8 @@ def __extract_id(stock, v):
     if match:
         r = match.group('value')
         value = float(re.sub(r',', r'.', r))
+    else:
+        value = None
 
     f.close()
     return value
