@@ -51,12 +51,11 @@ opts.add_argument("-e",
 args = opts.parse_args()
 
 # local definitions
-log_date_format = "%Y%m%d %H:%M:%S"
+logdtfm= "%Y%m%d %H:%M:%S"
 
 # presentation
-version = "0.beta"
-start_time = datetime.datetime.now()
-now = start_time.strftime(log_date_format)
+startt = datetime.datetime.now()
+now = startt.strftime(logdtfm)
 log("version:", version)
 log("start:", now)
 log("conf file:", args.conf)
@@ -123,10 +122,10 @@ Stock.sort_roe(sector)
 Stock.sort_greenblatt(sector)
 
 # show results
-gen_time = datetime.datetime.now()
-now = gen_time.strftime(log_date_format)
+gent = datetime.datetime.now()
+now = gent.strftime(logdtfm)
 log("output generated time:", now)
-show(sector, output, gen_time, driver="html")
+show(sector, output, gent, driver="html")
 
-total_time = gen_time - start_time
-log("total time:", "%d s" % total_time.seconds)
+totalt = gent - startt
+log("total time:", "%d s" % totalt.seconds)
