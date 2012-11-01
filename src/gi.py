@@ -26,7 +26,7 @@ def fetch(c):
     # download URL
     try:
         iurl = urllib.request.urlopen(url)
-    except URLError:
+    except urllib.error.URLError:
         log(end="FAILED", prefix=False)
     else:
         log(end="OK", prefix=False)
