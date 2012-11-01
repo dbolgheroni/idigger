@@ -15,7 +15,7 @@ _baseurl = "http://guiainvest.com.br/raiox/"
 def fetch(c):
     """Fetch files to extract info needed by other classes."""
 
-    log("downloading", c.rjust(6), end=" stock info... ")
+    log("fetch", c.rjust(6), end=" stock data ")
 
     # define path for local file
     stockfile = os.path.join(tmpdir, c.lower() + ".aspx")
@@ -27,17 +27,16 @@ def fetch(c):
     try:
         iurl = urllib.request.urlopen(url)
     except urllib.error.URLError:
-        log(end="FAILED", prefix=False)
+        log(end="(FAILED)", prefix=False)
+        return None
     else:
-        log(end="OK", prefix=False)
+        log(end="(OK)", prefix=False)
 
     # write file
     try:
         ourl = open(stockfile, "w")
     except IOError:
-        log(" (couldn't write to local file)", prefix=False)
-    else:
-        log(prefix=False)
+        log(" couldn't store data into", stockfile, prefix=False)
 
     stock = iurl.read().decode("iso-8859-1")
     ourl.write(stock)
