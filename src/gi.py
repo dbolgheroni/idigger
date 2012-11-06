@@ -27,10 +27,10 @@ def fetch(c):
     try:
         iurl = urllib.request.urlopen(url)
     except urllib.error.URLError:
-        log(end="(FAILED)", prefix=False)
+        log("(FAILED)", prefix=False)
         return None
     else:
-        log(end="(OK)", prefix=False)
+        log("(OK)", prefix=False)
 
     # write file
     try:
