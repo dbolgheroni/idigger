@@ -56,7 +56,12 @@ def extract_roe(stock):
 # internal functions
 def __extract_id(stock, v):
     path = os.path.join(tmpdir, stock + ".aspx")
-    f = open(path, encoding="iso-8859-1")
+    try:
+        f = open(path, encoding="iso-8859-1")
+    except:
+        log("couldn't open %s" % path)
+        return None
+
     s = f.read()
     
     regex = v + r'">(?P<value>(-)?(\d)+,(\d)+)'
