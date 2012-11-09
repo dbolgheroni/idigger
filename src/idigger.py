@@ -84,10 +84,18 @@ for c in conf:
     obj = Stock(c) 
 
     query = "SELECT pe FROM %s WHERE date=?" % c.lower()
-    obj.pe = db.execute(query, (todaystr,)).fetchone()[0] # take this
+    try:
+        obj.pe = db.execute(query, (todaystr,)).fetchone()[0]
+    except TypeError:
+        log("empty db entry for stock" % c.upper())
+        continue
 
     query = "SELECT roe FROM %s WHERE date=?" % c.lower()
-    obj.roe = db.execute(query, (todaystr,)).fetchone()[0] # take this
+    try:
+        obj.roe = db.execute(query, (todaystr,)).fetchone()[0] 
+    except TypeError:
+        log("empty db entry for stock" % c.upper())
+        continue
 
     # only instantiate "good" stocks (with valid non-negative values)
     sector.append(obj)

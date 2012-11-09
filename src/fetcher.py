@@ -96,7 +96,7 @@ for c in conf:
     r = result.fetchall()
 
     if not r:
-        log("table %s doesn't exists, creating" % c.lower(), caller=me)
+        log("table %s doesn't exists, creating" % c.lower().rjust(6), caller=me)
         db.execute("CREATE TABLE %s (date INTEGER PRIMARY KEY, pe DOUBLE, roe DOUBLE)" % c.lower()) 
 
 # -D argument
@@ -109,12 +109,7 @@ else:
 # populate database
 for c in conf:
     pe = gi.extract_pe(c.lower())
-    if not pe:
-        continue
-
     roe = gi.extract_roe(c.lower())
-    if not roe:
-        continue
 
     t = (today, pe, roe)
     query = "INSERT INTO %s VALUES (?, ?, ?)" % c.lower()
