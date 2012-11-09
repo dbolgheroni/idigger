@@ -29,9 +29,9 @@
 import argparse
 import datetime
 import os
+import sqlite3
 
 # import idigger modules
-import gi
 from idiggerconf import *
 from log import *
 from show import *
@@ -43,71 +43,51 @@ opts.add_argument("conf",
         help="the file which contains stocks codes, one per line")
 opts.add_argument("output", 
         help="the filename for the HTML output")
-opts.add_argument("-D",
-        help="don't dowload info from source (useful to debug)",
-        action="store_true")
-opts.add_argument("-e", 
-        help="specify which engine to use")
 args = opts.parse_args()
 
-# local definitions
-logdtfm= "%Y%m%d %H:%M:%S"
-
 # presentation
-startt = datetime.datetime.now()
-now = startt.strftime(logdtfm)
-log("version:", version)
-log("start:", now)
 log("conf file:", args.conf)
 
-# read stocks from stocklist
+# initializations
+today = datetime.datetime.now() 
+todaystr = today.strftime("%Y%m%d") # db primary key
+
+# open conf file
 try:
     f = open(args.conf)
 except IOError:
-    log("couldn't open %s (check for permissions)" % args.conf)
+    log("can't open %s, exiting" % args.conf)
     exit(1)
 else:
     conf = tuple(f.read().splitlines())
     f.close()
 
-# create temporary dirs
-if not (os.path.exists(tmpdir)):
-    try:
-        log("required temporary directories don't exist, creating")
-        os.makedirs(tmpdir)
-    except OSError:
-        log("can't create temporary dirs, quitting")
-        exit(1)
-
-# -D argument
-if not args.D:
-    for c in conf:
-        gi.fetch(c)
-else:
-    log("dummy mode selected, won't download files")
-
-# open file for output
+# open output file
 try:
     output = open(args.output, "w")
 except IOError:
-    log("couldn't open %s (check for permissions)" % args.output)
+    log("can't open %s for writing, exiting" % args.output)
+    exit(1)
+
+# open database file
+log("reading db file:", dbfile)
+try:
+    db = sqlite3.connect(dbfile)
+except IOError:
+    log("can't open db %s, exiting" % dbfile)
     exit(1)
 
 # instantiate stocks
 sector = []
-for s in conf:
+for c in conf:
     # "constructor"
-    obj = Stock(s) 
+    obj = Stock(c) 
 
-    # extract P/E from file
-    obj.pe = gi.extract_pe(s.lower())
-    if not obj.pe or obj.pe < 0:
-        continue
+    query = "SELECT pe FROM %s WHERE date=?" % c.lower()
+    obj.pe = db.execute(query, (todaystr,)).fetchone()[0] # take this
 
-    # extract P/VB from file
-    obj.roe = gi.extract_roe(s.lower())
-    if not obj.roe or obj.pe < 0:
-        continue
+    query = "SELECT roe FROM %s WHERE date=?" % c.lower()
+    obj.roe = db.execute(query, (todaystr,)).fetchone()[0] # take this
 
     # only instantiate "good" stocks (with valid non-negative values)
     sector.append(obj)
@@ -121,11 +101,5 @@ Stock.sort_roe(sector)
 # sort Greenblatt order
 Stock.sort_greenblatt(sector)
 
-# show results
-gent = datetime.datetime.now()
-now = gent.strftime(logdtfm)
-log("output generated time:", now)
-show(sector, output, gent, driver="html")
-
-totalt = gent - startt
-log("total time:", "%d s" % totalt.seconds)
+# HTML output
+show(sector, output, today, driver="html")

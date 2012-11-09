@@ -8,14 +8,16 @@ import urllib.request
 from idiggerconf import *
 from log import *
 
+
 # local definitions
 _baseurl = "http://guiainvest.com.br/raiox/"
+me = "fetcher"
 
 # interface
 def fetch(c):
     """Fetch files to extract info needed by other classes."""
 
-    log("fetch", c.rjust(6), end=" stock data ")
+    log("fetch", c.rjust(6), end=" stock data ", caller=me)
 
     # define path for local file
     stockfile = os.path.join(tmpdir, c.lower() + ".aspx")
@@ -27,16 +29,16 @@ def fetch(c):
     try:
         iurl = urllib.request.urlopen(url)
     except urllib.error.URLError:
-        log("(FAILED)", prefix=False)
+        log("(FAILED)", prefix=False, caller=me)
         return None
     else:
-        log("(OK)", prefix=False)
+        log("(OK)", prefix=False, caller=me)
 
     # write file
     try:
         ourl = open(stockfile, "w")
     except IOError:
-        log(" couldn't store data into", stockfile, prefix=False)
+        log("can't open %s for writing" % stockfile, caller=me)
 
     stock = iurl.read().decode("iso-8859-1")
     ourl.write(stock)
@@ -59,17 +61,17 @@ def __extract_id(stock, v):
     try:
         f = open(path, encoding="iso-8859-1")
     except:
-        log("couldn't open %s" % path)
+        log("can't open %s" % path, caller=me)
         return None
 
     s = f.read()
     
-    regex = v + r'">(?P<value>(-)?(\d)+,(\d)+)'
+    regex = v + r'">(?P<value>(-)?(\d)+(\.(\d)+)?(,)?(\d)+)'
     pattern = re.compile(regex)
     match = pattern.search(s)
     if match:
-        r = match.group('value')
-        value = float(re.sub(r',', r'.', r))
+        t = re.sub(r'\.', r'', match.group('value')) # remove dot
+        value = float(re.sub(r',', r'.', t)) # remove BRA notation
     else:
         value = None
 

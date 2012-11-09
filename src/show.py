@@ -12,9 +12,9 @@ def _start_html():
 def _end_html():
     return "</table></body></html>"
 
-def _title(t, date):
+def _title(t, today):
     # format in output isn't the same as in log, so redefine
-    now = date.strftime("%d/%m/%Y %H:%M:%S")
+    now = today.strftime("%d/%m/%Y %H:%M:%S")
 
     head = ('<head>'
             '<meta http-equiv="Content-Type" ' 
@@ -50,7 +50,7 @@ def _table_row(cells):
     return row
 
 # interface
-def show(sector, output, date, driver="html", title="idigger"):
+def show(sector, output, today, driver="html", title="idigger"):
     """Output the results in a table.
 
     There are optional parameters defined, which are:
@@ -87,7 +87,7 @@ def show(sector, output, date, driver="html", title="idigger"):
 
         # html header
         print(_start_html(), file=output)
-        print(_title(title, date), file=output)
+        print(_title(title, today), file=output)
 
         # table header
         #hdr = ["Ações", "P/L", "ROE"]
