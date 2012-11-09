@@ -7,6 +7,7 @@ def log(*pos, **keyw):
     end=).
     
     """
+
     caller = keyw.get("caller", "idigger")
 
     if keyw.get("prefix", True):
