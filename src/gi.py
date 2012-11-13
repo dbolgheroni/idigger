@@ -72,12 +72,16 @@ def __extract_id(stock, v):
     if match:
         t = re.sub(r'\.', r'', match.group('value')) # remove dot
         value = float(re.sub(r',', r'.', t)) # remove BRA notation
-        log("%s: %s = %s" % (stock.upper().rjust(6), v, value), caller=me)
+
+        # enable for debugging
+        #log("%s: %s = %s" % (stock.upper().rjust(6), v, value),
+        #        caller=me)
     else:
-        log("invalid value for stock", stock.upper(), caller=me)
+        log("invalid value for %s, assigning -9999"
+                % (stock.upper().rjust(6)), caller=me)
 
         # it's safer to assign a "rotten" value than no value at all
-        # treat this in idigger
+        # (handle this in idigger)
         value = float(-9999)
 
     f.close()

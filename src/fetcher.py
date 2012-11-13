@@ -116,7 +116,8 @@ for c in conf:
     try:
         db.execute(query, t)
     except sqlite3.IntegrityError:
-        log("%s: date is primary key, skipping" % c.lower(), caller=me)
+        log("%s: date is primary key, skipping" % c.lower().rjust(6),
+                caller=me)
 
     db.commit()
 
