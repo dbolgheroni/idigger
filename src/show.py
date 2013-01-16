@@ -2,6 +2,7 @@
 
 import datetime
 
+from idiggerconf import *
 from log import *
 
 # internal functions to handle HTML
@@ -12,10 +13,8 @@ def _start_html():
 def _end_html():
     return "</table></body></html>"
 
-def _title(t, today):
+def _title(t):
     # format in output isn't the same as in log, so redefine
-    now = today.strftime("%d/%m/%Y %H:%M:%S")
-
     head = ('<head>'
             '<meta http-equiv="Content-Type" ' 
             'content="text/html;charset=utf-8">'
@@ -50,7 +49,7 @@ def _table_row(cells):
     return row
 
 # interface
-def show(sector, output, today, driver="html", title="idigger"):
+def show(sector, output, driver="html", title="idigger"):
     """Output the results in a table.
 
     There are optional parameters defined, which are:
@@ -87,7 +86,7 @@ def show(sector, output, today, driver="html", title="idigger"):
 
         # html header
         print(_start_html(), file=output)
-        print(_title(title, today), file=output)
+        print(_title(title), file=output)
 
         # table header
         #hdr = ["Ações", "P/L", "ROE"]

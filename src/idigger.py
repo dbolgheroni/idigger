@@ -107,4 +107,4 @@ Stock.sort_roe(sector)
 Stock.sort_greenblatt(sector)
 
 # HTML output
-show(sector, output, startt, driver="html")
+show(sector, output, driver="html")
