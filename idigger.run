@@ -16,16 +16,8 @@ conf="icon iee ifnc imat imob indx mlcx smll util all"
 LC_CTYPE="en_US.UTF-8"
 export LC_CTYPE
 
-echo "===> FETCHING DATA"
 /usr/bin/python3 idigger/src/fetcher.py idigger/conf/BRA/idx/all.conf
-echo
 
-echo "===> ANALYZING"
 for c in $conf; do
-    # convert title to upper case
-    title=`echo $c | tr "[:lower:]" "[:upper:]"`
-
-    echo "===> $title"
     /usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/$c.conf public_html/$c.html 
-    echo
 done
