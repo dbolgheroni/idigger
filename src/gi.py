@@ -78,10 +78,6 @@ def __extract_id(stock, v):
     if match:
         t = re.sub(r'\.', r'', match.group('value')) # remove dot
         value = float(re.sub(r',', r'.', t)) # remove BRA notation
-
-        # enable for debugging
-        #log("%s: %s = %s" % (stock.upper().rjust(6), v, value),
-        #        caller=me)
     else:
         value = None
 
