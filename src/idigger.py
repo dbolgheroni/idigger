@@ -83,14 +83,14 @@ for c in conf:
     try:
         obj.pe = db.execute(query, (today,)).fetchone()[0]
     except TypeError:
-        log("empty db entry for stock %s" % c.upper())
+        log("empty db entry for stock %s, skipping" % c.upper())
         continue
 
     query = "SELECT roe FROM %s WHERE date=?" % c.lower()
     try:
         obj.roe = db.execute(query, (today,)).fetchone()[0] 
     except TypeError:
-        log("empty db entry for stock" % c.upper())
+        log("empty db entry for stock %s, skipping" % c.upper())
         continue
 
     # only instantiate "good" stocks (with valid non-negative values)
