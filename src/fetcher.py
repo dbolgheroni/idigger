@@ -74,10 +74,10 @@ else:
 # open tmp dir, make if it doesn't exists
 if not os.path.exists(tmpdir):
     try:
-        log("required temporary directories don't exist, creating", caller=me)
+        log("tmp dir doesn't exist, creating", caller=me)
         os.makedirs(tmpdir)
     except OSError:
-        log("can't make temporary dirs, exiting", caller=me)
+        log("can't make tmp dir, exiting", caller=me)
         exit(1)
 
 # open database file
