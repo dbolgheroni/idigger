@@ -90,6 +90,7 @@ if not args.D:
     # create a dir to the files to
     gi.makedir()
 
+    log("fetching data for stocks")
     for c in conf:
         gi.fetch(c)
 else:

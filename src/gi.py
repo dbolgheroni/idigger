@@ -27,17 +27,13 @@ def makedir():
 def fetch(c):
     """Fetch files to extract info needed by other classes."""
 
-    log("fetch", c.rjust(6), end=" stock data ", caller=me)
-
     # download URL
     url = _baseurl + c.lower() + '.aspx' 
     try:
         iurl = urllib.request.urlopen(url)
     except urllib.error.URLError:
-        log("(FAILED)", prefix=False, caller=me)
+        log("failed to fetch data for %s" % c, caller=me)
         return None
-    else:
-        log("(OK)", prefix=False, caller=me)
 
     # write file
     stockfile = os.path.join(_localdir, c.lower() + ".aspx")
