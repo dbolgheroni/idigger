@@ -83,12 +83,7 @@ def __extract_id(stock, v):
         #log("%s: %s = %s" % (stock.upper().rjust(6), v, value),
         #        caller=me)
     else:
-        log("invalid value for %s, assigning -9999"
-                % (stock.upper().rjust(6)), caller=me)
-
-        # it's safer to assign a "rotten" value than no value at all
-        # (handle this in idigger)
-        value = float(-9999)
+        value = None
 
     f.close()
     return value

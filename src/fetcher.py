@@ -100,13 +100,19 @@ for c in conf:
     pe = gi.extract_pe(c.lower())
     roe = gi.extract_roe(c.lower())
 
-    t = (today, pe, roe)
-    query = "INSERT INTO %s VALUES (?, ?, ?)" % c.lower()
-    try:
-        db.execute(query, t)
-    except sqlite3.IntegrityError:
-        log("%s: date is primary key, skipping" % c.lower().rjust(6),
+    # does not populate database with invalid values
+    if pe and roe:
+        t = (today, pe, roe)
+        query = "INSERT INTO %s VALUES (?, ?, ?)" % c.lower()
+        try:
+            db.execute(query, t)
+        except sqlite3.IntegrityError:
+            log("%s: date is primary key, skipping" % c.lower().rjust(6),
+                    caller=me)
+    else:
+        log("invalid value for %s, skipping" % c.upper().rjust(6),
                 caller=me)
+        continue
 
     db.commit()
 

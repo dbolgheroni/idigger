@@ -83,7 +83,7 @@ for c in conf:
     try:
         obj.pe = db.execute(query, (today,)).fetchone()[0]
     except TypeError:
-        log("empty db entry for stock" % c.upper())
+        log("empty db entry for stock %s" % c.upper())
         continue
 
     query = "SELECT roe FROM %s WHERE date=?" % c.lower()
