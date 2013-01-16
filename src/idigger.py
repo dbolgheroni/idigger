@@ -48,10 +48,6 @@ args = opts.parse_args()
 # presentation
 log("conf file:", args.conf)
 
-# initializations
-today = datetime.datetime.now() 
-todaystr = today.strftime("%Y%m%d") # db primary key
-
 # open conf file
 try:
     f = open(args.conf)
@@ -85,14 +81,14 @@ for c in conf:
 
     query = "SELECT pe FROM %s WHERE date=?" % c.lower()
     try:
-        obj.pe = db.execute(query, (todaystr,)).fetchone()[0]
+        obj.pe = db.execute(query, (today,)).fetchone()[0]
     except TypeError:
         log("empty db entry for stock" % c.upper())
         continue
 
     query = "SELECT roe FROM %s WHERE date=?" % c.lower()
     try:
-        obj.roe = db.execute(query, (todaystr,)).fetchone()[0] 
+        obj.roe = db.execute(query, (today,)).fetchone()[0] 
     except TypeError:
         log("empty db entry for stock" % c.upper())
         continue
@@ -111,4 +107,4 @@ Stock.sort_roe(sector)
 Stock.sort_greenblatt(sector)
 
 # HTML output
-show(sector, output, today, driver="html")
+show(sector, output, startt, driver="html")
