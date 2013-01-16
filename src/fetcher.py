@@ -72,7 +72,7 @@ else:
     f.close()
 
 # open tmp dir, make if it doesn't exists
-if not (os.path.exists(tmpdir)):
+if not os.path.exists(tmpdir):
     try:
         log("required temporary directories don't exist, creating", caller=me)
         os.makedirs(tmpdir)
