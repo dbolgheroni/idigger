@@ -48,16 +48,11 @@ opts.add_argument("-e",
 args = opts.parse_args()
 
 # local definitions
-logdatef= "%Y%m%d %H:%M:%S"
-dbdatef = "%Y%m%d"
 me="fetcher"
 
 # initializations
-startt = datetime.datetime.now()
-today = startt.strftime(dbdatef)
 
 # presentation
-now = startt.strftime(logdatef)
 log("start:", now, caller=me)
 log("conf file:", args.conf, caller=me)
 
@@ -70,15 +65,6 @@ except IOError:
 else:
     conf = tuple(f.read().splitlines())
     f.close()
-
-# open tmp dir, make if it doesn't exists
-if not os.path.exists(tmpdir):
-    try:
-        log("tmp dir doesn't exist, creating", caller=me)
-        os.makedirs(tmpdir)
-    except OSError:
-        log("can't make tmp dir, exiting", caller=me)
-        exit(1)
 
 # open database file
 try:
@@ -101,6 +87,9 @@ for c in conf:
 
 # -D argument
 if not args.D:
+    # create a dir to the files to
+    gi.makedir()
+
     for c in conf:
         gi.fetch(c)
 else:

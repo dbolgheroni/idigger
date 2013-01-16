@@ -8,24 +8,29 @@ import urllib.request
 from idiggerconf import *
 from log import *
 
-
 # local definitions
 _baseurl = "http://guiainvest.com.br/raiox/"
+_localdir = os.path.join(homedir, today + "-gi")
 me = "fetcher"
 
-# interface
+# INTERFACE
+def makedir():
+    """Make dir to fetch files into it."""
+    if not os.path.exists(_localdir):
+        try:
+            log("making " + _localdir + "/ dir", caller=me)
+            os.makedirs(_localdir)
+        except OSError:
+            log("can't make " + _localdir + "/, exiting", caller=me)
+            exit(1)
+
 def fetch(c):
     """Fetch files to extract info needed by other classes."""
 
     log("fetch", c.rjust(6), end=" stock data ", caller=me)
 
-    # define path for local file
-    stockfile = os.path.join(tmpdir, c.lower() + ".aspx")
-
-    # define URL
-    url = _baseurl + c.lower() + '.aspx' 
-
     # download URL
+    url = _baseurl + c.lower() + '.aspx' 
     try:
         iurl = urllib.request.urlopen(url)
     except urllib.error.URLError:
@@ -35,6 +40,7 @@ def fetch(c):
         log("(OK)", prefix=False, caller=me)
 
     # write file
+    stockfile = os.path.join(_localdir, c.lower() + ".aspx")
     try:
         ourl = open(stockfile, "w")
     except IOError:
@@ -55,9 +61,9 @@ def extract_roe(stock):
     """Extract ROE value. Returns 'None' if not found."""
     return __extract_id(stock, 'lbRentabilidadePatrimonioLiquido3')
 
-# internal functions
+# INTERNAL METHODS
 def __extract_id(stock, v):
-    path = os.path.join(tmpdir, stock + ".aspx")
+    path = os.path.join(_localdir, stock + ".aspx")
     try:
         f = open(path, encoding="iso-8859-1")
     except:

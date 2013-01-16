@@ -3,7 +3,16 @@
 import datetime
 import os.path
 
-# definitions
+# date and time
+logdatef= "%Y%m%d %H:%M:%S"
+dbdatef = "%Y%m%d"
+
+startt = datetime.datetime.now()
+
+today = startt.strftime(dbdatef)
+now = startt.strftime(logdatef)
+
+# dir
 homedir = os.path.join(os.environ['HOME'], ".idigger")
 tmpdir = os.path.join(homedir, "tmp")
 

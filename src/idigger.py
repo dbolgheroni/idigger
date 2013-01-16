@@ -98,7 +98,8 @@ for c in conf:
         continue
 
     # only instantiate "good" stocks (with valid non-negative values)
-    sector.append(obj)
+    if (obj.pe > 0) and (obj.roe > 0):
+        sector.append(obj)
 
 # sort P/E order
 Stock.sort_pe(sector)
