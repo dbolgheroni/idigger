@@ -33,9 +33,11 @@ import sqlite3
 
 # import idigger modules
 from idiggerconf import *
-from log import *
 from show import *
 from stock import *
+
+# local definitions
+prefix = "[idigger]"
 
 opts = argparse.ArgumentParser()
 
@@ -46,13 +48,13 @@ opts.add_argument("output",
 args = opts.parse_args()
 
 # presentation
-log("conf file:", args.conf)
+print(prefix, "conf file:", args.conf)
 
 # open conf file
 try:
     f = open(args.conf)
 except IOError:
-    log("can't open %s, exiting" % args.conf)
+    print(prefix, " can't open ", args.conf, ", exiting", sep="")
     exit(1)
 else:
     conf = tuple(f.read().splitlines())
@@ -62,15 +64,15 @@ else:
 try:
     output = open(args.output, "w")
 except IOError:
-    log("can't open %s for writing, exiting" % args.output)
+    print(prefix, "can't open", args.output, "for writing, exiting")
     exit(1)
 
 # open database file
-log("reading db file:", dbfile)
+print(prefix, "reading db file", dbfile)
 try:
     db = sqlite3.connect(dbfile)
 except IOError:
-    log("can't open db %s, exiting" % dbfile)
+    print(prefix, " can't open db ", dbfile, ", exiting", sep="")
     exit(1)
 
 # instantiate stocks
@@ -83,14 +85,16 @@ for c in conf:
     try:
         obj.pe = db.execute(query, (today,)).fetchone()[0]
     except TypeError:
-        log("empty db entry for stock %s, skipping" % c.upper())
+        print(prefix, " empty db entry for stock ", c.upper(),
+                ", skipping", sep="")
         continue
 
     query = "SELECT roe FROM %s WHERE date=?" % c.lower()
     try:
         obj.roe = db.execute(query, (today,)).fetchone()[0] 
     except TypeError:
-        log("empty db entry for stock %s, skipping" % c.upper())
+        print(prefix, " empty db entry for stock ", c.upper(),
+                ", skipping", sep="")
         continue
 
     # only instantiate "good" stocks (with valid non-negative values)

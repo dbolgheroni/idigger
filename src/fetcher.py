@@ -34,7 +34,6 @@ import sqlite3
 # import idigger modules
 import gi
 from idiggerconf import *
-from log import *
 
 opts = argparse.ArgumentParser()
 
@@ -48,19 +47,19 @@ opts.add_argument("-e",
 args = opts.parse_args()
 
 # local definitions
-me="fetcher"
+prefix = "[fetcher]"
 
 # initializations
 
 # presentation
-log("start:", now, caller=me)
-log("conf file:", args.conf, caller=me)
+print(prefix, "start:", now)
+print(prefix, "conf file:", args.conf)
 
 # open conf file
 try:
     f = open(args.conf)
 except IOError:
-    log("can't open %s, exiting" % args.conf, caller=me)
+    print(prefix, " can't open ", args.conf, ", exiting", sep="")
     exit(1)
 else:
     conf = tuple(f.read().splitlines())
@@ -70,7 +69,7 @@ else:
 try:
     db = sqlite3.connect(dbfile)
 except IOError:
-    log("can't open db %s, exiting" % dbfile, caller=me)
+    print(prefix, " can't open db ", dbfile, ", exiting", sep="")
     exit(1)
 
 # create tables dinamically if it don't exist
@@ -82,7 +81,8 @@ for c in conf:
     r = result.fetchall()
 
     if not r:
-        log("table %s doesn't exists, creating" % c.lower().rjust(6), caller=me)
+        print(prefix, "table", c.lower().rjust(6),
+                "doesn't exists, creating")
         db.execute("CREATE TABLE %s (date INTEGER PRIMARY KEY, pe DOUBLE, roe DOUBLE)" % c.lower()) 
 
 # -D argument
@@ -90,11 +90,11 @@ if not args.D:
     # create a dir to the files to
     gi.makedir()
 
-    log("fetching data for stocks", caller=me)
+    print(prefix, "fetching data for stocks")
     for c in conf:
         gi.fetch(c)
 else:
-    log("dummy mode selected, won't download files", caller=me)
+    print(prefix, "dummy mode selected, won't download files")
 
 # populate database
 for c in conf:
@@ -108,11 +108,11 @@ for c in conf:
         try:
             db.execute(query, t)
         except sqlite3.IntegrityError:
-            log("%s: date is primary key, skipping" % c.lower().rjust(6),
-                    caller=me)
+            print(prefix, " ", c.lower().rjust(6),
+                    ": date is primary key, skipping", sep="")
     else:
-        log("invalid value for %s, skipping" % c.upper().rjust(6),
-                caller=me)
+        print(prefix, " invalid value for ", c.upper().rjust(6),
+                ", skipping", sep="")
         continue
 
     db.commit()
@@ -120,4 +120,4 @@ for c in conf:
 # statistics
 endt = datetime.datetime.now()
 totalt = endt - startt
-log("total time:", "%d s" % totalt.seconds, caller=me)
+print(prefix, " total time: ", totalt.seconds, "s", sep="")

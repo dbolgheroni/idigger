@@ -3,7 +3,9 @@
 import datetime
 
 from idiggerconf import *
-from log import *
+
+# local definitions
+prefix = "[idigger]" # this module is used solely by idigger
 
 # internal functions to handle HTML
 def _start_html():
@@ -62,7 +64,7 @@ def show(sector, output, driver="html", title="idigger"):
     """
 
     if driver == "text": 
-        log("generating text output")
+        print(prefix, "generating text output")
 
         # table header
         print("Ação".ljust(9),
@@ -82,7 +84,7 @@ def show(sector, output, driver="html", title="idigger"):
                   #str(s.greenblatt_order).rjust(16), file=output)
 
     if driver == "html":
-        log("generating HTML output")
+        print(prefix, "generating HTML output")
 
         # html header
         print(_start_html(), file=output)

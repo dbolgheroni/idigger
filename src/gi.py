@@ -6,7 +6,6 @@ import re
 import urllib.request
 
 from idiggerconf import *
-from log import *
 
 # local definitions
 _baseurl = "http://guiainvest.com.br/raiox/"
@@ -18,10 +17,11 @@ def makedir():
     """Make dir to fetch files into it."""
     if not os.path.exists(_localdir):
         try:
-            log("making " + _localdir + "/ dir", caller=me)
+            print(prefix, " making ", _localdir, "/ dir", sep="")
             os.makedirs(_localdir)
         except OSError:
-            log("can't make " + _localdir + "/, exiting", caller=me)
+            print(prefix, " can't make ", _localdir, "/, exiting",
+                    sep="")
             exit(1)
 
 def fetch(c):
@@ -32,7 +32,7 @@ def fetch(c):
     try:
         iurl = urllib.request.urlopen(url)
     except urllib.error.URLError:
-        log("failed to fetch data for %s" % c, caller=me)
+        print(prefix, "failed to fetch data for", c)
         return None
 
     # write file
@@ -40,7 +40,7 @@ def fetch(c):
     try:
         ourl = open(stockfile, "w")
     except IOError:
-        log("can't open %s for writing" % stockfile, caller=me)
+        print(prefix, "can't open", stockfile, "for writing")
 
     stock = iurl.read().decode("iso-8859-1")
     ourl.write(stock)
@@ -63,7 +63,7 @@ def __extract_id(stock, v):
     try:
         f = open(path, encoding="iso-8859-1")
     except:
-        log("can't open %s" % path, caller=me)
+        print(prefix, "can't open", path)
         return None
 
     s = f.read()
