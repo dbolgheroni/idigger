@@ -10,7 +10,7 @@ from idiggerconf import *
 # local definitions
 _baseurl = "http://guiainvest.com.br/raiox/"
 _localdir = os.path.join(homedir, today + "-gi")
-me = "fetcher"
+prefix = "[fetcher]"
 
 # INTERFACE
 def makedir():
