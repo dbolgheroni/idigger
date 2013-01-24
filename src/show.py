@@ -54,57 +54,34 @@ def _table_row(cells):
     return row
 
 # interface
-def show(sector, output, driver="html", title="idigger"):
+def show(sector, output, title="idigger"):
     """Output the results in a table.
 
     There are optional parameters defined, which are:
 
     title=  Defines the title that will appear on output (defaults to
             'idigger').
-    driver= Defines the file format. Available options are 'html' and
-            'text' (defaults to 'html').
 
     """
 
-    if driver == "text": 
-        print(prefix, "generating text output")
+    print(prefix, "generating HTML output")
 
-        # table header
-        print("Ação".ljust(9),
-              "P/L".rjust(6),
-              #"ordem P/L".rjust(9),
-              "ROE".rjust(6), file=output) # adjust to debug
-              #"ordem ROE".rjust(9),
-              #"ordem Greenblatt".rjust(16), file=output)
+    # html header
+    print(_start_html(), file=output)
+    print(_title(title), file=output)
 
-        # rows
-        for s in sector:
-            print(s.code.ljust(9),
-                  str(s.pe).rjust(6),
-                  #str(s.pe_order).rjust(9),
-                  str(s.roe).rjust(6), file=output) # adjust to debug
-                  #str(s.roe_order).rjust(9),
-                  #str(s.greenblatt_order).rjust(16), file=output)
+    # table header
+    #hdr = ["Ações", "P/L", "ROE"]
+    hdr = ["Ações", "P/L", "ROE",
+            "ordem P/L", "ordem ROE", "ordem Greenblatt"]
+    print(_table_hdr(hdr), file=output)
 
-    if driver == "html":
-        print(prefix, "generating HTML output")
+    # rows
+    for s in sector:
+        #row = [s.code, s.pe, s.roe]
+        row = [s.code, s.pe, s.roe,
+                s.pe_order, s.roe_order, s.greenblatt_order]
+        print(_table_row(row), file=output)
 
-        # html header
-        print(_start_html(), file=output)
-        print(_title(title), file=output)
-
-        # table header
-        #hdr = ["Ações", "P/L", "ROE"]
-        hdr = ["Ações", "P/L", "ROE",
-               "ordem P/L", "ordem ROE", "ordem Greenblatt"]
-        print(_table_hdr(hdr), file=output)
-
-        # rows
-        for s in sector:
-            #row = [s.code, s.pe, s.roe]
-            row = [s.code, s.pe, s.roe,
-                   s.pe_order, s.roe_order, s.greenblatt_order]
-            print(_table_row(row), file=output)
-        
-        # end html
-        print(_end_html(), file=output)
+    # end html
+    print(_end_html(), file=output)
