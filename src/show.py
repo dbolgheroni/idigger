@@ -22,7 +22,10 @@ def _title(t):
             'content="text/html;charset=utf-8">'
             '</head>')
     title = '<title>%s</title></head><body>' % t
-    update = '<p><b>&Uacute;ltima atualiza&ccedil;&atilde;o:</b> %s</p>' % now
+
+    updatet = datetime.datetime.now()
+    agora = updatet.strftime(showdatef)
+    update = '<p><b>&Uacute;ltima atualiza&ccedil;&atilde;o:</b> %s</p>' % agora
 
     return head + title + update
  

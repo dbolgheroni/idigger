@@ -6,6 +6,7 @@ import os.path
 # date and time
 logdatef= "%Y%m%d %H:%M:%S"
 dbdatef = "%Y%m%d"
+showdatef = "%d/%m/%Y %H:%M:%S"
 
 startt = datetime.datetime.now()
 
