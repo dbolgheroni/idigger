@@ -21,11 +21,12 @@ def _title(t):
             '<meta http-equiv="Content-Type" ' 
             'content="text/html;charset=utf-8">'
             '</head>')
-    title = '<title>%s</title></head><body>' % t
+    title = '<title>{0}</title></head><body>'.format(t)
 
     updatet = datetime.datetime.now()
     agora = updatet.strftime(showdatef)
-    update = '<p><b>&Uacute;ltima atualiza&ccedil;&atilde;o:</b> %s</p>' % agora
+    update = ('<p><b>&Uacute;ltima atualiza&ccedil;&atilde;o:</b> '
+              '{0}</p>'.format(agora))
 
     return head + title + update
  
@@ -35,7 +36,7 @@ def _table_hdr(cells):
     # join() avoids the performance cost of operations like a += b for
     # string concatenation on non-CPython implementations (like JPython)
     for c in cells:
-        th = "<th>%s</th>" % c
+        th = "<th>{0}</th>".format(c)
         row = ''.join([row, th])
 
     row = ''.join([row, "</tr>"])
@@ -47,7 +48,7 @@ def _table_row(cells):
     # join() avoids the performance cost of operations like a += b for
     # string concatenation on non-CPython implementations (like JPython)
     for c in cells:
-        td = "<td>%s</td>" % c
+        td = "<td>{0}</td>".format(c)
         row = ''.join([row, td])
 
     row = ''.join([row, "</tr>"])
