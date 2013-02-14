@@ -49,8 +49,6 @@ args = opts.parse_args()
 # local definitions
 prefix = "[fetcher]"
 
-# initializations
-
 # presentation
 print(prefix, "start:", now)
 print(prefix, "conf file:", args.conf)
