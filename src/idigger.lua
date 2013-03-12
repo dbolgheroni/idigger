@@ -29,19 +29,58 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 local b = require "base"
 local fm = require "fm"
+local show = require "show"
+require "stock"
 
+prefix = "[idg] "
+
+-- international date format (ISO 8601)
+print(prefix .. "idigger started at " .. os.date("%Y-%m-%d %H:%M:%S"))
+
+print(prefix .. "loading conf file " .. b.conffile)
 local conf = dofile(b.conffile) -- TODO: assert
 
--- do not download data in debug mode
-if not debug then
+if debug then print(prefix .. "debug enabled") end
+
+-- fetchfiles option from conf
+if fetchfiles then
     for _, s in ipairs(stocklist) do
+        print(prefix .. "downloading " .. s .. " stock data")
         fm.fetch(s)
     end
 end
 
--- init() loads raw data into internal module tables
+-- loads raw data fetched into internal module tables (REQUIRED)
 fm.init()
 
-for _, s in ipairs(stocklist) do
-    fm.debug(s)
+-- print debug info
+if debug then
+    for _, s in ipairs(stocklist) do fm.debug(s) end
 end
+
+-- instantiate stocks
+sector = {}
+for _, s in ipairs(stocklist) do
+    local obj = Stock:new{code = s}
+
+    obj.ey = fm.extract_ey(s)
+    obj.roc = fm.extract_roc(s)
+
+    -- FILTER code
+    -- only instantiate "good" stocks
+    if obj.ey > 0 and obj.roc > 0 then
+        sector[#sector + 1] = obj
+    else
+        print(prefix .. "invalid value for " .. s .. ", skipping")
+    end
+end
+
+-- class methods
+Stock:sort_ey(sector)
+Stock:sort_roc(sector)
+Stock:sort_greenblatt(sector)
+
+print(prefix .. "generating HTML output")
+show.html(sector, outputfile)
+
+print(prefix .. "run time: " .. os.clock())

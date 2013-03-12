@@ -13,49 +13,45 @@ local base = require "base"
 
 local M = {}
 
-local fmpath = base.datapath .. "/" .. base.today .. "-fm" 
+local fmpath = base.datapath .. "/" .. os.date("%Y%m%d") .. "-fm" 
+
+local prefix = "[fmt] "
 
 -- class variable
 local rawdata = {}
 
 -- fetch data from provider
 function M.fetch (s)
-    -- TODO: socket module with coroutines
+    -- TODO: socket module with coroutines, and return status codes
     local filepath = fmpath .. "/" .. string.lower(s) .. ".html"
     command = "curl --create-dirs -so " .. filepath .. " 'http://www.fundamentus.com.br/detalhes.php?papel=" .. s .. "'" 
 
-    print("downloading " .. s .. " stock data into " .. filepath)
     os.execute(command)
 end
 
--- earnings yield
+-- earnings yield (EY)
 function M.extract_ey (s)
     -- ey = ebit / ev
     local ey
     if pcall(function ()
         ey = 1 / extract_evEbit(s)
     end) then
-        return ey * 100
-    else
-        return nil
+        return base.truncate(ey * 100, 2)
     end
 end
 
--- return on capital
+-- return on capital (ROC)
 function M.extract_roc (s)
     local roc
     if pcall(function ()
         roc = extract_ebit(s) / (extract_netWorkingCapital(s) + extract_netFixedAssets(s))
     end) then
-        return roc * 100
-    else 
-        return nil
+        return base.truncate(roc * 100, 2)
     end
 end
 
--- debug as shown in Fundamentus
+-- debug info extracted from Fundamentus and other internal formulas
 function M.debug (s)
-    print("debug for " .. s)
     local mv = extract_marketValue (s)
     local na = extract_netAssets(s)
     local nnfa = extract_netNonFixedAssets(s)
@@ -67,19 +63,20 @@ function M.debug (s)
     local ey = M.extract_ey(s)
     local roc = M.extract_roc(s)
 
-    print("  (fm) Valor de mercado    ", mv)
-    print("  (fm) Ativo               ", na)
-    print("  (fm) Ativo Circulante    ", nnfa)
-    print("  (fm) EBIT                ", ebit)
-    print("  (fm) EV/EBIT             ", evebit)
-    print("  (fm) P/Cap. Giro         ", mvnwc)
-    print("  (..) Net Working Capital ", nwc)
-    print("  (..) Net Fixed Assets    ", nfa)
-    print("  (in) EY [%]              ", ey)
-    print("  (in) ROC [%]             ", roc)
+    local novalue = "*******"
+    print(prefix .. s .. " Valor de mercado " .. (mv or novalue))
+    print(prefix .. s .. " Ativo " .. (na or novalue))
+    print(prefix .. s .. " Ativo Circulante " .. (nnfa or novalue))
+    print(prefix .. s .. " EBIT " .. (ebit or novalue))
+    print(prefix .. s .. " EV/EBIT " .. (evebit or novalue))
+    print(prefix .. s .. " P/Cap. Giro " .. (mvnwc or novalue))
+    print(prefix .. s .. " Net Working Capital " .. (nwc or novalue))
+    print(prefix .. s .. " Net Fixed Assets " .. (nfa or novalue))
+    print(prefix .. s .. " EY [%] " .. (ey or novalue))
+    print(prefix .. s .. " ROC [%] " .. (roc or novalue))
 end
 
--- store all raw data in a class variable
+-- load raw data fetched into internal module tables 
 function M.init ()
     for _, s in ipairs(stocklist) do
         s = string.lower(s)
@@ -102,8 +99,6 @@ function extract_netFixedAssets (s)
         nfa = extract_netAssets(s) - extract_netNonFixedAssets(s)
     end) then
         return nfa
-    else
-        return nil
     end
 end
 
@@ -148,48 +143,41 @@ function extract_netWorkingCapital (s)
         nwc = extract_marketValue(s) / extract_marketValueNetWorkingCapital(s)
     end) then
         return nwc
-    else
-        return nil
     end
 end
 
 -- extract integer
--- s: stock; p: pattern; o: nth-line occurrence in the data file
-function _extract_integer (s, p, o)
+function _extract_integer (s, p, o) -- (s)tock; (p)attern; (o)cc. line
     s = string.lower(s)
 
+    -- extract the value from a raw line of data
     local lines = __matchlines(s, p)
     local raw_value = rawdata[s][lines[o] + 1]
 
     local nodots = string.gsub(raw_value, "%.", "")
     local match = string.match(nodots, "%d+", 24)
-    local value = tonumber(match)
-
-    return value 
+    if match then
+        local value = tonumber(match)
+        return value
+    end
 end
 
 -- extract float
--- s: stock; p: pattern; o: nth-line occurrence in the data file
-function _extract_float (s, p, o)
+function _extract_float (s, p, o) -- (s)tock; (p)attern; (o)cc. line
     s = string.lower(s)
 
     -- extract the value from a raw line of data
     local lines = __matchlines(s, p)
-
     local raw_value = rawdata[s][lines[o] + 2]
 
     -- process raw data
     local match = string.match(raw_value, "[-]?%d+,%d+")
-    local comma
     if match then
-        nocomma = string.gsub(match, ",", ".")
-    else
-        return nil
+        local nocomma = string.gsub(match, ",", ".")
+        local value = tonumber(nocomma)
+
+        return value
     end
-
-    local value = tonumber(nocomma)
-
-    return value
 end
 
 -- match lines the given pattern occurs

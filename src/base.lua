@@ -7,6 +7,11 @@ M.datapath = M.basepath .. "/data"
 
 M.conffile = M.basepath .. "/idiggerrc.lua"
 
-M.today = os.date("%Y%m%d")
+M.truncate = function (n, d)
+    d = 1 / 10^d
+    n = n - n%d
+
+    return n
+end
 
 return M

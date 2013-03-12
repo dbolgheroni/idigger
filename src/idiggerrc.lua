@@ -164,5 +164,8 @@ all = {
 }
 
 stocklist = test
-debug = false
+outputfile = "index.html"
+debug = true
+--debug = true
+fetchfiles = true
 confpath = os.getenv("HOME") .. "/.idigger/"
