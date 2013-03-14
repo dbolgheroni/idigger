@@ -42,12 +42,12 @@ local conf = dofile(b.conffile) -- TODO: assert
 
 if debug then print(prefix .. "debug enabled") end
 
--- fetchfiles option from conf
+-- fetch option from conf
 local dlok = {}
-if fetchfiles then
+if fetch then
     local dlstatus
 
-    for _, s in ipairs(all) do
+    for _, s in ipairs(fetchlist) do
         print(prefix .. "fetching " .. s .. " raw data")
         dlstatus = fm.fetch(s)
 
@@ -58,7 +58,7 @@ if fetchfiles then
         end
     end
 else
-    dlok = all
+    dlok = fetchlist
 end
 
 -- load raw data fetched into internal module tables (REQUIRED)
@@ -111,5 +111,5 @@ for _, group in ipairs(active) do
 
     print(prefix .. "generating group " .. group.name .. " output (" ..
           group.output .. ")")
-    show.html(Group, group.output)
+    show.html(Group, outputdir .. group.output)
 end

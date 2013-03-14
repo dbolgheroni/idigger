@@ -2,10 +2,10 @@
 
 local M = {}
 
-M.confdir = os.getenv("HOME") .. "/.idigger"
-M.datadir = M.confdir .. "/data"
+M.confdir = os.getenv("HOME") .. "/.idigger/"
+M.datadir = M.confdir .. "data/"
 
-M.conffile = M.confdir .. "/config.lua"
+M.conffile = M.confdir .. "config.lua"
 
 M.truncate = function (n, d)
     d = 1 / 10^d

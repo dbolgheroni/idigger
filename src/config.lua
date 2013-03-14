@@ -532,7 +532,12 @@ active = {
     idx.util
 }
 
-all = idx.all
-debug = false
-fetchfiles = false
-confdir = os.getenv("HOME") .. "/.idigger/"
+-- dir where the HTML tables are generated (don't forget trailing '/')
+outputdir = os.getenv("HOME") .. "/public_html/"
+
+-- list of stocks fetched if 'fetch' option is set to 'true'
+fetchlist = idx.all
+
+-- DEBUG
+debug = false -- outputs useful info for debugging 
+fetch = true -- don't fetch raw data
