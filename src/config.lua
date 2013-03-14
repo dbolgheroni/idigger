@@ -535,4 +535,4 @@ active = {
 all = idx.all
 debug = false
 fetchfiles = false
-confpath = os.getenv("HOME") .. "/.idigger/"
+confdir = os.getenv("HOME") .. "/.idigger/"

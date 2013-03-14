@@ -13,7 +13,7 @@ local base = require "base"
 
 local M = {}
 
-local fmpath = base.datapath .. "/" .. os.date("%Y%m%d") .. "-fm" 
+local fmtdir = base.datadir .. "/" .. os.date("%Y%m%d") .. "-fm" 
 
 local prefix = "[fmt] "
 
@@ -23,8 +23,8 @@ local rawdata = {}
 -- fetch data from provider
 function M.fetch (s)
     -- TODO: socket module with coroutines, and return status codes
-    local filepath = fmpath .. "/" .. string.lower(s) .. ".html"
-    command = "curl --create-dirs -so " .. filepath .. " 'http://www.fundamentus.com.br/detalhes.php?papel=" .. s .. "'" 
+    local fmtfile = fmtdir .. "/" .. string.lower(s) .. ".html"
+    command = "curl --create-dirs -so " .. fmtfile .. " 'http://www.fundamentus.com.br/detalhes.php?papel=" .. s .. "'" 
 
     return os.execute(command)
 end
@@ -80,9 +80,9 @@ end
 function M.init (l)
     for _, s in ipairs(l) do
         s = string.lower(s)
-        local filepath = fmpath .. "/" .. s .. ".html"
-        if not pcall(function () io.input(filepath) end) then
-            print(prefix .. "couldn't open " .. filepath)
+        local fmtfile = fmtdir .. "/" .. s .. ".html"
+        if not pcall(function () io.input(fmtfile) end) then
+            print(prefix .. "couldn't open " .. fmtfile)
         end
 
         local ldata = {}
