@@ -26,7 +26,7 @@ function M.fetch (s)
     local filepath = fmpath .. "/" .. string.lower(s) .. ".html"
     command = "curl --create-dirs -so " .. filepath .. " 'http://www.fundamentus.com.br/detalhes.php?papel=" .. s .. "'" 
 
-    os.execute(command)
+    return os.execute(command)
 end
 
 -- earnings yield (EY)
@@ -77,11 +77,13 @@ function M.debug (s)
 end
 
 -- load raw data fetched into internal module tables 
-function M.init ()
-    for _, s in ipairs(stocklist) do
+function M.init (l)
+    for _, s in ipairs(l) do
         s = string.lower(s)
         local filepath = fmpath .. "/" .. s .. ".html"
-        io.input(filepath)
+        if not pcall(function () io.input(filepath) end) then
+            print(prefix .. "couldn't open " .. filepath)
+        end
 
         local ldata = {}
         for line in io.lines() do

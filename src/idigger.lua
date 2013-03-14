@@ -43,44 +43,73 @@ local conf = dofile(b.conffile) -- TODO: assert
 if debug then print(prefix .. "debug enabled") end
 
 -- fetchfiles option from conf
+local dlok = {}
 if fetchfiles then
-    for _, s in ipairs(stocklist) do
-        print(prefix .. "downloading " .. s .. " stock data")
-        fm.fetch(s)
+    local dlstatus
+
+    for _, s in ipairs(all) do
+        print(prefix .. "fetching " .. s .. " raw data")
+        dlstatus = fm.fetch(s)
+
+        if dlstatus then
+            dlok[#dlok + 1] = s
+        else
+            print(prefix .. "error fetching " .. s .. " raw data")
+        end
     end
+else
+    dlok = all
 end
 
--- loads raw data fetched into internal module tables (REQUIRED)
-fm.init()
+-- load raw data fetched into internal module tables (REQUIRED)
+fm.init(dlok)
 
 -- print debug info
 if debug then
-    for _, s in ipairs(stocklist) do fm.debug(s) end
+    for _, s in ipairs(dlok) do fm.debug(s) end
 end
 
--- instantiate stocks
-sector = {}
-for _, s in ipairs(stocklist) do
-    local obj = Stock:new{code = s}
+-- instantiate all stocks
+print(prefix .. "extracting info from raw data")
+Stocks = {}
+for _, s in ipairs(dlok) do
+    --local obj = Stock:new{code = s}
+    local obj = Stock:new{}
 
     obj.ey = fm.extract_ey(s)
     obj.roc = fm.extract_roc(s)
 
-    -- FILTER code
-    -- only instantiate "good" stocks
-    if obj.ey > 0 and obj.roc > 0 then
-        sector[#sector + 1] = obj
-    else
-        print(prefix .. "invalid value for " .. s .. ", skipping")
-    end
+    --Stocks[#Stocks + 1] = obj
+    Stocks[s] = obj
 end
 
--- class methods
-Stock:sort_ey(sector)
-Stock:sort_roc(sector)
-Stock:sort_greenblatt(sector)
+-- main
+for _, group in ipairs(active) do
+    local Group = {}
 
-print(prefix .. "generating HTML output")
-show.html(sector, outputfile)
+    for _, s in ipairs(group) do
+        -- FILTER
+        if Stocks[s].ey > 0 and Stocks[s].roc > 0 then
+            Group[#Group + 1] = Stocks[s]
+            Group[#Group].code = s
+        else
+            print(prefix .. "group " .. group.name .. ", stock "
+                  .. s .. " filtered")
+        end
+    end
 
-print(prefix .. "run time: " .. os.clock())
+    Stock:sort_ey(Group)
+    Stock:sort_roc(Group)
+    Stock:sort_greenblatt(Group)
+
+    --[[ debug
+    for k, v in pairs(Group) do
+        print(k, v.code, v.ey, v.roc,
+              v.ey_order, v.roc_order, v.greenblatt_order)
+    end
+    --]]
+
+    print(prefix .. "generating group " .. group.name .. " output (" ..
+          group.output .. ")")
+    show.html(Group, group.output)
+end

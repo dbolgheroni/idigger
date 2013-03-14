@@ -18,30 +18,30 @@ function Stock:new(o)
 end
 
 -- EY sort
-function Stock:sort_ey (sector)
-    table.sort(sector, function (a, b) return a.ey > b.ey end) -- reverse order
+function Stock:sort_ey (group)
+    table.sort(group, function (a, b) return a.ey > b.ey end) -- reverse order
 
-    for i, s in ipairs(sector) do
+    for i, s in ipairs(group) do
         s.ey_order = i
     end
 end
 
 -- ROC sort
-function Stock:sort_roc (sector)
-    table.sort(sector, function (a, b) return a.roc > b.roc end) -- reverse order
+function Stock:sort_roc (group)
+    table.sort(group, function (a, b) return a.roc > b.roc end) -- reverse order
 
-    for i, s in ipairs(sector) do
+    for i, s in ipairs(group) do
         s.roc_order = i
     end
 end
 
 -- Greenblatt sort
-function Stock:sort_greenblatt (sector)
-    for _, s in ipairs(sector) do
+function Stock:sort_greenblatt (group)
+    for _, s in ipairs(group) do
         s.greenblatt_order = s.ey_order + s.roc_order
     end
 
-    table.sort(sector, function (a, b)
+    table.sort(group, function (a, b)
         return a.greenblatt_order < b.greenblatt_order
     end)
 end
