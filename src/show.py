@@ -36,22 +36,22 @@ def _table_hdr(cells):
     # join() avoids the performance cost of operations like a += b for
     # string concatenation on non-CPython implementations (like JPython)
     for c in cells:
-        th = "<th>{0}</th>".format(c)
+        th = '<th>{0}</th>'.format(c)
         row = ''.join([row, th])
 
-    row = ''.join([row, "</tr>"])
+    row = ''.join([row, '</tr>'])
     return row
 
 def _table_row(cells):
-    row = "<tr>"
+    row = '<tr>'
 
     # join() avoids the performance cost of operations like a += b for
     # string concatenation on non-CPython implementations (like JPython)
     for c in cells:
-        td = "<td>{0}</td>".format(c)
+        td = '<td>{0}</td>'.format(c)
         row = ''.join([row, td])
 
-    row = ''.join([row, "</tr>"])
+    row = ''.join([row, '</tr>'])
     return row
 
 # interface
@@ -73,7 +73,7 @@ def show(sector, output, title="idigger"):
 
     # table header
     #hdr = ["Ações", "P/L", "ROE"]
-    hdr = ["Ações", "P/L", "ROE",
+    hdr = ["A&ccedil;&otilde;es", "P/L", "ROE",
             "ordem P/L", "ordem ROE", "ordem Greenblatt"]
     print(_table_hdr(hdr), file=output)
 
