@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# A wrapper to run multiple instances of idigger with different conf
+# files.
+#
+# Typically, a single conf file contains only related stocks since,
+# historically, it doesn't make sense to compare the values idigger
+# provides between all stocks available. EACH INVESTOR HAS ITS OWN
+# CRITERIA.
+#
+# This script is just a reference to be modified for a specific need.  
+
+# add new conf files here (without ".conf")
+conf="icon iee ifnc imat imob indx mlcx smll util all"
+
+LC_CTYPE="en_US.UTF-8"
+export LC_CTYPE
+
+/usr/bin/python3 idigger/src/fetcher.py idigger/conf/BRA/idx/all.conf
+
+for c in $conf; do
+    /usr/bin/python3 idigger/src/idigger.py idigger/conf/BRA/idx/$c.conf public_html/$c.html 
+done
