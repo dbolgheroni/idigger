@@ -38,7 +38,14 @@ prefix = "[idg] "
 print(prefix .. "idigger started at " .. os.date("%Y-%m-%d %H:%M:%S"))
 
 print(prefix .. "loading conf file " .. b.conffile)
-local conf = dofile(b.conffile) -- TODO: assert
+
+-- check for existing config file
+if io.open(b.conffile) then
+    dofile(b.conffile)
+else
+    print(prefix .. "can't open " .. b.conffile .. ", exiting")
+    os.exit(1)
+end
 
 if debug then print(prefix .. "debug enabled") end
 
