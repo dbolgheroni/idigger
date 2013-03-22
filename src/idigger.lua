@@ -72,15 +72,15 @@ end
 -- instantiate all stocks
 print(prefix .. "extracting info from raw data")
 Stocks = {}
-for _, s in ipairs(dlok) do
+Stocks.defvalues = { ey = -math.huge, roc = -math.huge }
+Stocks.mt = { __index = Stocks.defvalues }
+for _, s in ipairs(fetchlist) do
     --local obj = Stock:new{code = s}
-    local obj = Stock:new{}
+    Stocks[s] = Stock:new{}
+    setmetatable(Stocks[s], Stocks.mt) -- to not break in main
 
-    obj.ey = fm.extract_ey(s)
-    obj.roc = fm.extract_roc(s)
-
-    --Stocks[#Stocks + 1] = obj
-    Stocks[s] = obj
+    Stocks[s].ey = fm.extract_ey(s)
+    Stocks[s].roc = fm.extract_roc(s)
 end
 
 -- main
@@ -88,14 +88,8 @@ for _, group in ipairs(active) do
     local Group = {}
 
     for _, s in ipairs(group) do
-        -- FILTER
-        if Stocks[s].ey > 0 and Stocks[s].roc > 0 then
-            Group[#Group + 1] = Stocks[s]
-            Group[#Group].code = s
-        else
-            print(prefix .. "group " .. group.name .. ", stock "
-                  .. s .. " filtered")
-        end
+        Group[#Group + 1] = Stocks[s]
+        Group[#Group].code = s
     end
 
     Stock:sort_ey(Group)
