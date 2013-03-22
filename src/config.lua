@@ -519,6 +519,16 @@ idx.util = {
     "TRPL4"
 }
 
+idx.sample = {
+    name = "SMP",
+    output = "sample.html",
+    "ELPL4",
+    "TOTS3",
+    "GETI4",
+    "PETR4",
+    "OGXP3"
+}
+
 active = {
     idx.all,
     idx.icon,
@@ -529,7 +539,8 @@ active = {
     idx.indx,
     idx.mlcx,
     idx.smll,
-    idx.util
+    idx.util,
+    --idx.sample
 }
 
 -- dir where the HTML tables are generated (don't forget trailing '/')
