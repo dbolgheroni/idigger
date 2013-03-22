@@ -12,17 +12,10 @@ function M.html (group, output)
 
     io.write(last_update())
 
-    local cells = { "#", "A&ccedil;&otilde;es", "E/Y", "ROC" }
-    io.write(table_hdr(cells))
+    local hdr = { "#", "A&ccedil;&otilde;es", "E/Y", "ROC" }
+    io.write(table_hdr(hdr))
 
-    for i, s in ipairs(group) do
-        local data = { i,
-                       s.code,
-                       string.format("%.2f", s.ey),
-                       string.format("%.2f", s.roc)
-                     }
-        io.write(table_row(data))
-    end
+    for i, s in ipairs(group) do io.write(table_row(i, s)) end
 
     io.write(end_html())
 end
@@ -52,10 +45,10 @@ function title (t)
     return head, title
 end
 
-function table_hdr (cells)
-    local row = '<table border=1><tr bgcolor="#c0c0c0">'
+function table_hdr (hdr)
+    local row = '<table style="border-collapse:collapse" border=1><tr bgcolor="#c0c0c0">'
 
-    for _, c in ipairs(cells) do
+    for _, c in ipairs(hdr) do
         th = '<th>' .. c .. '</th>'
         row = row .. th
     end
@@ -63,13 +56,44 @@ function table_hdr (cells)
     return row .. '</tr>\n'
 end
 
-function table_row (cells)
+function table_row (i, s)
+    -- no Javascript, no CSS, just pure HTML
     local row = '<tr>'
+    local td
 
-    for _, c in ipairs(cells) do
-        td = '<td>' .. c .. '</td>'
-        row = row .. td
+    -- #
+    td = '<td>' .. i .. '</td>'
+    row = row .. td
+
+    -- code
+    td =  '<td>' .. s.code .. '</td>'
+    row = row .. td
+
+    -- ey
+    if s.ey == -math.huge then
+        -- grey
+        td = '<td><font color="#c0c0c0">no data</font></td>'
+    elseif s.ey < 0 then
+        -- red
+        td = '<td><font color="#ff0000">' .. s.ey .. '</font></td>'
+    else
+        -- green
+        td = '<td><font color="#008000">' .. s.ey .. '</font></td>'
     end
+    row = row .. td
+
+    -- roc
+    if s.roc == -math.huge then
+        -- grey
+        td = '<td><font color="#c0c0c0">no data</font></td>'
+    elseif s.roc < 0 then
+        -- red
+        td = '<td><font color="#ff0000">' .. s.roc .. '</font></td>'
+    else
+        -- green
+        td = '<td><font color="#008000">' .. s.roc .. '</font></td>'
+    end
+    row = row .. td
 
     return row .. '</tr>\n'
 end
