@@ -77,8 +77,8 @@ function table_row (i, s)
         -- red
         td = '<td><font color="#ff0000">' .. s.ey .. '</font></td>'
     else
-        -- green
-        td = '<td><font color="#008000">' .. s.ey .. '</font></td>'
+        -- default
+        td = '<td>' .. s.ey .. '</td>'
     end
     row = row .. td
 
@@ -90,8 +90,8 @@ function table_row (i, s)
         -- red
         td = '<td><font color="#ff0000">' .. s.roc .. '</font></td>'
     else
-        -- green
-        td = '<td><font color="#008000">' .. s.roc .. '</font></td>'
+        -- default
+        td = '<td>' .. s.roc .. '</td>'
     end
     row = row .. td
 
