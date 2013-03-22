@@ -1,13 +1,6 @@
 -- Stock class
 
--- instance values
-Stock = {
-    ey = -math.huge,
-    roc = -math.huge,
-    ey_order = 0,
-    roc_order = 0,
-    greenblatt_order = 0
-}
+Stock = {}
 
 -- constructor
 function Stock:new(o)
