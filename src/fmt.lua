@@ -13,7 +13,7 @@ local base = require "base"
 
 local M = {}
 
-local fmtdir = base.datadir .. os.date("%Y%m%d") .. "-fm" 
+local fmtdir = base.datadir .. os.date("%Y%m%d") .. "-fmt" 
 
 local prefix = "[fmt] "
 

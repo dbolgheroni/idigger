@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --]]
 
 local b = require "base"
-local fm = require "fm"
+local fmt = require "fmt"
 local show = require "show"
 require "stock"
 
@@ -56,7 +56,7 @@ if fetch then
 
     for _, s in ipairs(fetchlist) do
         print(prefix .. "fetching " .. s .. " raw data")
-        dlstatus = fm.fetch(s)
+        dlstatus = fmt.fetch(s)
 
         if dlstatus then
             dlok[#dlok + 1] = s
@@ -69,11 +69,11 @@ else
 end
 
 -- load raw data fetched into internal module tables (REQUIRED)
-fm.init(dlok)
+fmt.init(dlok)
 
 -- print debug info
 if debug then
-    for _, s in ipairs(dlok) do fm.debug(s) end
+    for _, s in ipairs(dlok) do fmt.debug(s) end
 end
 
 -- instantiate all stocks
@@ -86,8 +86,8 @@ for _, s in ipairs(fetchlist) do
     Stocks[s] = Stock:new{}
     setmetatable(Stocks[s], Stocks.mt) -- to not break in main
 
-    Stocks[s].ey = fm.extract_ey(s)
-    Stocks[s].roc = fm.extract_roc(s)
+    Stocks[s].ey = fmt.extract_ey(s)
+    Stocks[s].roc = fmt.extract_roc(s)
 end
 
 -- main
