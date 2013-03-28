@@ -36,7 +36,7 @@ function M.extract_ey (s)
     if pcall(function ()
         ey = 1 / extract_evEbit(s)
     end) then
-        return tonumber(string.format("%.02f", tostring(ey * 100)))
+        return tonumber(string.format("%.02f", ey * 100))
     end
 end
 
@@ -46,7 +46,7 @@ function M.extract_roc (s)
     if pcall(function ()
         roc = extract_ebit(s) / (extract_netWorkingCapital(s) + extract_netFixedAssets(s))
     end) then
-        return tonumber(string.format("%.02f", tostring(roc * 100)))
+        return tonumber(string.format("%.02f", roc * 100))
     end
 end
 
