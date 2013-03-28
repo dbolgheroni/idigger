@@ -28,7 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 --]]
 
 local b = require "base"
-local fmt = require "fmt"
+local fmt = require "fmt_drv"
 local show = require "show"
 require "stock"
 
