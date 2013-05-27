@@ -5,7 +5,7 @@ A method name convention used in this driver:
 
 M.extract_whatever (): main methods (interface)
 extract_whatever   (): aux methods used by main methods, not exposed
-_extract_whatever  ():      basic aux methods to not duplicate code
+_extract_whatever  (): basic aux methods to not duplicate code
 __method           (): very basic aux methods used in _extract_whatever()
 --]]
 
