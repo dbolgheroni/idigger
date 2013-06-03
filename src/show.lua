@@ -12,7 +12,7 @@ function M.html (group, output)
 
     io.write(last_update())
 
-    local hdr = { "#", "A&ccedil;&otilde;es", "E/Y", "ROC" }
+    local hdr = { "#", "A&ccedil;&otilde;es", "EY", "ROC" }
     io.write(table_hdr(hdr))
 
     for i, s in ipairs(group) do io.write(table_row(i, s)) end
