@@ -1,4 +1,4 @@
-"""idiggerconf module: contains definitions common to 2+ modules."""
+# contains definitions common to 2+ modules
 
 import datetime
 import os.path
@@ -15,6 +15,11 @@ now = startt.strftime(logdatef)
 
 # dir
 homedir = os.path.join(os.environ['HOME'], ".idigger")
+datadir = os.path.join(homedir, "data")
 tmpdir = os.path.join(homedir, "tmp")
 
 dbfile = os.path.join(homedir, "idigger.db")
+
+# debug switch
+debug = True
+#debug = False

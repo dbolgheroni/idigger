@@ -32,7 +32,9 @@ import os
 import sqlite3
 
 # import idigger modules
-import gi
+#import gi
+from stock import Stock
+from fmt_drv import Fundamentus
 from idiggerconf import *
 
 opts = argparse.ArgumentParser()
@@ -42,15 +44,15 @@ opts.add_argument("conf",
 opts.add_argument("-D",
         help="don't dowload info from source (useful to debug)",
         action="store_true")
-opts.add_argument("-e", 
-        help="specify which engine to use")
+# unused yet, there is only 1 driver
+opts.add_argument("-d",
+        help="specify which driver to use")
 args = opts.parse_args()
 
 # local definitions
-prefix = "[fetcher]"
+prefix = "[fch]"
 
 # presentation
-print(prefix, "start:", now)
 print(prefix, "conf file:", args.conf)
 
 # open conf file
@@ -73,49 +75,81 @@ except IOError:
 # create tables dinamically if it don't exist
 for c in conf:
     query = "SELECT * FROM sqlite_master WHERE TYPE='table' AND NAME=?"
-    result = db.execute(query, (c.lower(),))
+    result = db.execute(query, (c,))
 
     # only first fetchall() returns something, so assign it
     r = result.fetchall()
 
     if not r:
-        print(prefix, "table", c.lower().rjust(6),
+        print(prefix, "table", c.rjust(6),
                 "doesn't exists, creating")
-        db.execute("CREATE TABLE %s (date INTEGER PRIMARY KEY, pe DOUBLE, roe DOUBLE)" % c.lower()) 
+        db.execute("CREATE TABLE %s ( \
+                    date INTEGER PRIMARY KEY, \
+                    ey DOUBLE, \
+                    roc DOUBLE)" % c)
 
-# -D argument
-if not args.D:
-    # create a dir to the files to
-    gi.makedir()
+# instantiate stocks
+stock = {}
+for c in conf:
 
-    print(prefix, "fetching data for stocks")
-    for c in conf:
-        gi.fetch(c)
-else:
-    print(prefix, "dummy mode selected, won't download files")
+    # -D argument
+    if args.D:
+        stock[c] = Fundamentus(c, fetch=False)
+    else:
+        stock[c] = Fundamentus(c)
 
 # populate database
 for c in conf:
-    pe = gi.extract_pe(c.lower())
-    roe = gi.extract_roe(c.lower())
+    ey = stock[c].earnings_yield()
+    roc = stock[c].return_on_capital()
 
-    # does not populate database with invalid values
-    if pe and roe:
-        t = (today, pe, roe)
-        query = "INSERT INTO %s VALUES (?, ?, ?)" % c.lower()
+    # do not populate database with invalid values
+    if ey and roc:
+        # do not populate database with too much decimas
+        eyf = "{:.2f}".format(ey)
+        rocf = "{:.2f}".format(roc)
+
+        t = (today, eyf, rocf)
+        query = "INSERT INTO %s VALUES (?, ?, ?)" % c
         try:
             db.execute(query, t)
         except sqlite3.IntegrityError:
-            print(prefix, " ", c.lower().rjust(6),
-                    ": date is primary key, skipping", sep="")
+            print(prefix, " ", c.ljust(6),
+                    " date is primary key, skipping", sep="")
     else:
-        print(prefix, " invalid value for ", c.upper().rjust(6),
+        print(prefix, " invalid value for ", c.rjust(6),
                 ", skipping", sep="")
         continue
 
     db.commit()
 
-# statistics
-endt = datetime.datetime.now()
-totalt = endt - startt
-print(prefix, " total time: ", totalt.seconds, "s", sep="")
+# debug
+def print_debug(): # give a scope
+    prefix = "[dbg]"
+
+    for c in conf:
+        mv = stock[c].market_value()
+        na = stock[c].net_assets()
+        nnfa = stock[c].net_nonfixed_assets()
+        ebit = stock[c].ebit()
+        evebit = stock[c].ev_ebit()
+        mvnwc = stock[c].market_value_net_working_capital()
+        nwc = stock[c].net_working_capital()
+        nfa = stock[c].net_fixed_assets()
+        ey = stock[c].earnings_yield()
+        roc = stock[c].return_on_capital()
+
+        print(prefix, c.ljust(6), "Valor de mercado".ljust(24, "."), mv)
+        print(prefix, c.ljust(6), "Ativo".ljust(24, "."), na)
+        print(prefix, c.ljust(6), "Ativo Circulante".ljust(24, "."), nnfa)
+        print(prefix, c.ljust(6), "EBIT".ljust(24, "."), ebit)
+        print(prefix, c.ljust(6), "EV/EBIT".ljust(24, "."), evebit)
+        print(prefix, c.ljust(6), "P/Cap. Giro".ljust(24, "."), mvnwc)
+        print(prefix, c.ljust(6), "Net Working Capital".ljust(24, "."), nwc)
+        print(prefix, c.ljust(6), "Net Fixed Assets".ljust(24, "."), nfa)
+        print(prefix, c.ljust(6), "EY [%]".ljust(24, "."), ey)
+        print(prefix, c.ljust(6), "ROC [%]".ljust(24, "."), roc)
+
+if debug:
+    print(prefix, "debug enabled")
+    print_debug()

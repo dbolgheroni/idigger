@@ -1,27 +1,17 @@
-"""stock module: contains the Stock class."""
+# Stock class
 
 class Stock:
-    """Stock class contains attributes to handle stock specific data,
-    such as stock instances, sorting methods, etc.
+    def __init__(self, c):
+        self.code = c
 
-    """
-
-    #
-    # class methods
-    #
-
+    ######## P/E and ROE class methods #######
     # sort from low to high
     @classmethod
     def sort_pe(cls, sector):
-        """Sort stocks based on P/E and assign order as an instance
-        attribute for each stock.
-
-        |      pe           |
-        | pe_ok | pe_rotten |
-        0------->----------->
-                +           -
-
-        """
+        # |      pe           |
+        # | pe_ok | pe_rotten |
+        # 0------->----------->
+        #         +           -
 
         pe_ok = []
         pe_rotten = []
@@ -42,15 +32,10 @@ class Stock:
     # sort from high to low
     @classmethod
     def sort_roe(cls, sector):
-        """Sort stocks based on ROE and assign order as an instance
-        attribute for each stock.
-
-        |       roe           |
-        | roe_ok | roe_rotten |
-        <--------0------------>
-        +                     -
-
-        """
+        # |       roe           |
+        # | roe_ok | roe_rotten |
+        # <--------0------------>
+        # +                     -
 
         roe_ok = []
         roe_rotten = []
@@ -70,77 +55,49 @@ class Stock:
 
     # sort from low to high
     @classmethod
-    def sort_greenblatt(cls, sector):
-        """Sort stocks based on Greenblatt order, which, by itself, is
-        based on P/E and ROE orders, and assign order as an instance
-        attribute for each stock.
-
-        | greenblatt |
-        0------------>
-                     +
-
-        """
+    def sort_gb_peroe(cls, sector):
+        # | greenblatt |
+        # 0------------>
+        #              +
 
         for s in sector:
             s.greenblatt_order = s.pe_order + s.roe_order
 
         sector.sort(key=lambda s: s.greenblatt_order)
 
-    #
-    # instance methods
-    #
+    ######## EY and ROC class methods #######
+    # ey
+    @classmethod
+    def sort_ey(cls, sector):
+        ey = []
 
-    def __init__(self, c):
-        self.__code = c
+        for s in sector:
+            ey.append(s)
 
-    # code attribute
-    @property
-    def code(self):
-        return self.__code
+        ey.sort(key=lambda s: s.ey, reverse=True)
 
-    @code.setter
-    def code(self, c):
-        self.__code = c
+        for i, s in enumerate(ey, start=1):
+            s.ey_order = i
 
-    # real attributes
-    @property
-    def pe(self):
-        return self.__pe
+    # roc
+    @classmethod
+    def sort_roc(cls, sector):
+        roc = []
 
-    @pe.setter
-    def pe(self, v):
-        self.__pe = v
+        for s in sector:
+            roc.append(s)
 
-    @property
-    def roe(self):
-        return self.__roe
+        roc.sort(key=lambda s: s.roc, reverse=True)
 
-    @roe.setter
-    def roe(self, v):
-        self.__roe = v
+        for i, s in enumerate(roc, start=1):
+            s.roc_order = i
 
-    # order attributes
-    @property
-    def pe_order(self):
-        return self.__pe_order
+    # sort greenblatt
+    @classmethod
+    def sort_gb_eyroc(cls, sector):
+        gb_order = []
 
-    @pe_order.setter
-    def pe_order(self, v):
-        self.__pe_order = v
+        for s in sector:
+            s.gb_order = s.ey_order + s.roc_order
 
-    @property
-    def roe_order(self):
-        return self.__roe_order
-
-    @roe_order.setter
-    def roe_order(self, v):
-        self.__roe_order = v
-
-    @property
-    def greenblatt_order(self):
-        return self.__greenblatt_order
-
-    @greenblatt_order.setter
-    def greenblatt_order(self, v):
-        self.__greenblatt_order = v
-
+        sector.sort(key=lambda s: s.gb_order)

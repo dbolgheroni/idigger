@@ -37,7 +37,7 @@ from show import *
 from stock import *
 
 # local definitions
-prefix = "[idigger]"
+prefix = "[idg]"
 
 opts = argparse.ArgumentParser()
 
@@ -78,37 +78,36 @@ except IOError:
 # instantiate stocks
 sector = []
 for c in conf:
-    # "constructor"
-    obj = Stock(c) 
+    s = Stock(c)
 
-    query = "SELECT pe FROM %s WHERE date=?" % c.lower()
+    query = "SELECT ey FROM %s WHERE date=?" % c
     try:
-        obj.pe = db.execute(query, (today,)).fetchone()[0]
+        s.ey = db.execute(query, (today,)).fetchone()[0]
     except TypeError:
-        print(prefix, " empty db entry for stock ", c.upper(),
-                ", skipping", sep="")
+        print(prefix, " empty db entry for stock ", c, ", skipping",
+                sep="")
         continue
 
-    query = "SELECT roe FROM %s WHERE date=?" % c.lower()
+    query = "SELECT roc FROM %s WHERE date=?" % c
     try:
-        obj.roe = db.execute(query, (today,)).fetchone()[0] 
+        s.roc = db.execute(query, (today,)).fetchone()[0]
     except TypeError:
-        print(prefix, " empty db entry for stock ", c.upper(),
-                ", skipping", sep="")
+        print(prefix, " empty db entry for stock ", c, ", skipping",
+                sep="")
         continue
 
-    # only instantiate "good" stocks (with valid non-negative values)
-    if (obj.pe > 0) and (obj.roe > 0):
-        sector.append(obj)
+    # only instantiate stocks with both values
+    if s.ey and s.roc:
+        sector.append(s)
 
-# sort P/E order
-Stock.sort_pe(sector)
+# sort EY order
+Stock.sort_ey(sector)
 
-# sort ROE order
-Stock.sort_roe(sector)
+# sort ROC order
+Stock.sort_roc(sector)
 
 # sort Greenblatt order
-Stock.sort_greenblatt(sector)
+Stock.sort_gb_eyroc(sector)
 
 # HTML output
 show(sector, output)

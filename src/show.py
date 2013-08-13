@@ -1,11 +1,11 @@
-"""show module: contains functions to print results/analysis."""
+# module with functions to print results/analysis
 
 import datetime
 
 from idiggerconf import *
 
 # local definitions
-prefix = "[idigger]" # this module is used solely by idigger
+prefix = "[idg]" # this module is used solely by idigger
 
 # internal functions to handle HTML
 def _start_html():
@@ -56,15 +56,6 @@ def _table_row(cells):
 
 # interface
 def show(sector, output, title="idigger"):
-    """Output the results in a table.
-
-    There are optional parameters defined, which are:
-
-    title=  Defines the title that will appear on output (defaults to
-            'idigger').
-
-    """
-
     print(prefix, "generating HTML output")
 
     # html header
@@ -72,16 +63,17 @@ def show(sector, output, title="idigger"):
     print(_title(title), file=output)
 
     # table header
-    #hdr = ["Ações", "P/L", "ROE"]
-    hdr = ["A&ccedil;&otilde;es", "P/L", "ROE",
-            "ordem P/L", "ordem ROE", "ordem Greenblatt"]
+    #hdr = ["A&ccedil;&otilde;es", "P/L", "ROE",
+    #        "ordem P/L", "ordem ROE", "ordem Greenblatt"]
+    hdr = ["A&ccedil;&otilde;es", "EY", "ROC"]
     print(_table_hdr(hdr), file=output)
 
     # rows
     for s in sector:
         #row = [s.code, s.pe, s.roe]
-        row = [s.code, s.pe, s.roe,
-                s.pe_order, s.roe_order, s.greenblatt_order]
+        #row = [s.code, s.pe, s.roe,
+        #        s.pe_order, s.roe_order, s.greenblatt_order]
+        row = [s.code, s.ey, s.roc]
         print(_table_row(row), file=output)
 
     # end html

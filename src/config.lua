@@ -550,5 +550,5 @@ outputdir = os.getenv("HOME") .. "/public_html/"
 fetchlist = idx.all
 
 -- DEBUG
-debug = false -- outputs useful info for debugging 
-fetch = true -- don't fetch raw data
+debug = true -- outputs useful info for debugging 
+fetch = false -- don't fetch raw data
