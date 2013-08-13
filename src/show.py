@@ -4,6 +4,15 @@ import datetime
 
 from idiggerconf import *
 
+style = ('<style>\n'
+         'table,th,td { '
+         'border:2px solid white; border-collapse:collapse }\n'
+         'th { background:#778899; font-family:sans-serif }\n'
+         'td { background:#f5f5f5; font-family:Courier New }\n'
+         'td.ufloat { text-align:right }\n'
+         'td.float { text-align:right; color:#ff0000 }\n'
+         '</style>')
+
 # internal functions to handle HTML
 def _start_html():
     return('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 '
@@ -13,12 +22,11 @@ def _end_html():
     return "</table></body></html>"
 
 def _title(t):
-    # format in output isn't the same as in log, so redefine
     head = ('<head>'
             '<meta http-equiv="Content-Type" ' 
-            'content="text/html;charset=utf-8">'
-            '</head>')
-    title = '<title>{0}</title></head><body>'.format(t)
+            'content="text/html;charset=utf-8">')
+    head = ''.join([head, style])
+    title = '<title>{0}</title></head>\n<body>'.format(t)
 
     updatet = datetime.datetime.now()
     agora = updatet.strftime(showdatef)
@@ -28,10 +36,8 @@ def _title(t):
     return head + title + update
  
 def _table_hdr(cells):
-    row = '<table border=1><tr bgcolor="#c0c0c0">'
+    row = '<table><tr>'
 
-    # join() avoids the performance cost of operations like a += b for
-    # string concatenation on non-CPython implementations (like JPython)
     for c in cells:
         th = '<th>{0}</th>'.format(c)
         row = ''.join([row, th])
@@ -42,10 +48,17 @@ def _table_hdr(cells):
 def _table_row(cells):
     row = '<tr>'
 
-    # join() avoids the performance cost of operations like a += b for
-    # string concatenation on non-CPython implementations (like JPython)
     for c in cells:
-        td = '<td>{0}</td>'.format(c)
+        try:
+            float(c)
+
+            if c >= 0:
+                td = '<td class="ufloat">{0}</td>'.format(c)
+            else:
+                td = '<td class="float">{0}</td>'.format(c)
+        except ValueError:
+            td = '<td>{0}</td>'.format(c)
+
         row = ''.join([row, td])
 
     row = ''.join([row, '</tr>'])
@@ -58,18 +71,15 @@ def show(sector, output, title="idigger"):
     print(_title(title), file=output)
 
     # table header
-    #hdr = ["A&ccedil;&otilde;es", "P/L", "ROE",
-    #        "ordem P/L", "ordem ROE", "ordem Greenblatt"]
-    hdr = ["A&ccedil;&otilde;es", "EY", "ROC"]
+    hdr = ["#", "A&ccedil;&otilde;es", "EY", "ROC"]
     print(_table_hdr(hdr), file=output)
 
     # rows
+    c = 1
     for s in sector:
-        #row = [s.code, s.pe, s.roe]
-        #row = [s.code, s.pe, s.roe,
-        #        s.pe_order, s.roe_order, s.greenblatt_order]
-        row = [s.code, s.ey, s.roc]
+        row = [c, s.code, s.ey, s.roc]
         print(_table_row(row), file=output)
+        c += 1
 
     # end html
     print(_end_html(), file=output)
