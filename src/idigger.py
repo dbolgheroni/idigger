@@ -42,13 +42,13 @@ prefix = "[idg]"
 opts = argparse.ArgumentParser()
 
 opts.add_argument("conf", 
-        help="the file which contains stocks codes, one per line")
+        help="the filename with the stocks codes, one per line")
 opts.add_argument("output", 
         help="the filename for the HTML output")
 args = opts.parse_args()
 
 # presentation
-print(prefix, "conf file:", args.conf)
+print(prefix, "reading conf file", args.conf)
 
 # open conf file
 try:
@@ -84,7 +84,7 @@ for c in conf:
     try:
         s.ey = db.execute(query, (today,)).fetchone()[0]
     except TypeError:
-        print(prefix, " empty db entry for stock ", c, ", skipping",
+        print(prefix, " empty db entry for ", c, ", skipping",
                 sep="")
         continue
 
@@ -92,7 +92,7 @@ for c in conf:
     try:
         s.roc = db.execute(query, (today,)).fetchone()[0]
     except TypeError:
-        print(prefix, " empty db entry for stock ", c, ", skipping",
+        print(prefix, " empty db entry for ", c, ", skipping",
                 sep="")
         continue
 
@@ -110,4 +110,5 @@ Stock.sort_roc(sector)
 Stock.sort_gb_eyroc(sector)
 
 # HTML output
+print(prefix, "generating", args.output)
 show(sector, output)

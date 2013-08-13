@@ -114,11 +114,10 @@ for c in conf:
         try:
             db.execute(query, t)
         except sqlite3.IntegrityError:
-            print(prefix, " ", c.ljust(6),
-                    " date is primary key, skipping", sep="")
+            print(prefix, " ", c, " date is primary key, skipping",
+                    sep="")
     else:
-        print(prefix, " invalid value for ", c.rjust(6),
-                ", skipping", sep="")
+        print(prefix, " invalid value for ", c, ", skipping", sep="")
         continue
 
     db.commit()

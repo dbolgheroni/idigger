@@ -4,9 +4,6 @@ import datetime
 
 from idiggerconf import *
 
-# local definitions
-prefix = "[idg]" # this module is used solely by idigger
-
 # internal functions to handle HTML
 def _start_html():
     return('<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 '
@@ -56,8 +53,6 @@ def _table_row(cells):
 
 # interface
 def show(sector, output, title="idigger"):
-    print(prefix, "generating HTML output")
-
     # html header
     print(_start_html(), file=output)
     print(_title(title), file=output)
