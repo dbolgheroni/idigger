@@ -89,14 +89,15 @@ for c in conf:
                     roc DOUBLE)" % c)
 
 # instantiate stocks
+if args.D:
+    fetchopt = False
+else:
+    print(prefix, "downloading raw data")
+    fetchopt = True
+
 stock = {}
 for c in conf:
-
-    # -D argument
-    if args.D:
-        stock[c] = Fundamentus(c, fetch=False)
-    else:
-        stock[c] = Fundamentus(c)
+    stock[c] = Fundamentus(c, fetch=fetchopt)
 
 # populate database
 for c in conf:
