@@ -39,14 +39,12 @@
 all=$*
 today=`date "+%Y%m%d"`
 outfile="out-${today}.conf"
-
-# remove old version if it exists
-if [ -e "$outfile" ]; then
-    rm $outfile
-fi
+tmpfile="${outfile}.tmp"
 
 # cycle through all files specified as argument
 for a in $all; do
-    cat $all | grep lblCodigo | sed 's/.*">//; s/<.*//' | \
-        sort | uniq >> $outfile
+    cat $a | grep lblCodigo | sed 's/.*">//; s/<.*//' >> $tmpfile
 done
+
+cat $tmpfile | sort | uniq > $outfile
+rm $tmpfile
