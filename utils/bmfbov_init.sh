@@ -37,8 +37,7 @@
 # utility.
 
 all=$*
-today=`date "+%Y%m%d"`
-outfile="out-${today}.conf"
+outfile="out.conf"
 tmpfile="${outfile}.tmp"
 
 # cycle through all files specified as argument
