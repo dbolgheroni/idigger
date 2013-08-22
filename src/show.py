@@ -9,8 +9,8 @@ style = ('<style>\n'
          'border:2px solid white; border-collapse:collapse }\n'
          'th { background:#778899; font-family:sans-serif }\n'
          'td { background:#f5f5f5; font-family:Courier New }\n'
-         'td.ufloat { text-align:right }\n'
-         'td.float { text-align:right; color:#ff0000 }\n'
+         'td.sdigit { text-align: right }\n'
+         'td.udigit { text-align:right; color:#ff0000 }\n'
          '</style>')
 
 # internal functions to handle HTML
@@ -45,19 +45,20 @@ def _table_hdr(cells):
     row = ''.join([row, '</tr>'])
     return row
 
-def _table_row(cells):
-    row = '<tr>'
+def _table_row(pos, code, values):
+    row = '<tr><td class="sdigit">{0}</td><td>{1}</td>'.format(pos, code)
 
-    for c in cells:
+    for v in values:
         try:
-            float(c)
+            float(v)
 
-            if c >= 0:
-                td = '<td class="ufloat">{0}</td>'.format(c)
+            if v >= 0:
+                td = '<td class="sdigit">{0}</td>'.format(v)
             else:
-                td = '<td class="float">{0}</td>'.format(c)
-        except ValueError:
-            td = '<td>{0}</td>'.format(c)
+                td = '<td class="udigit">{0}</td>'.format(v)
+        except TypeError:
+            if not v:
+                td = '<td></td>'
 
         row = ''.join([row, td])
 
@@ -65,24 +66,21 @@ def _table_row(cells):
     return row
 
 # interface
-def show(sector, output, title="idigger"):
+def show(sector, output, title, tablehdr):
     # html header
     print(_start_html(), file=output)
     print(_title(title), file=output)
 
     # TODO generalize
     # table header
-    hdr = ["#", "A&ccedil;&otilde;es", "EY", "ROC",
-           "P/L", "ROE",
-           "Day Osc.", "Prev. Close"]
-    print(_table_hdr(hdr), file=output)
+    print(_table_hdr(tablehdr), file=output)
 
     # rows
-    c = 1
+    p = 1
     for s in sector:
-        row = [c, s.code, s.ey, s.roc, s.pe, s.roe, s.do, s.pc]
-        print(_table_row(row), file=output)
-        c += 1
+        v = [s.ey, s.roc, s.pe, s.roe, s.do, s.pc]
+        print(_table_row(p, s.code, v), file=output)
+        p += 1
 
     # end html
     print(_end_html(), file=output)

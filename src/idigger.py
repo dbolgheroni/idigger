@@ -118,6 +118,11 @@ Stock.sort_roc(sector)
 # sort Greenblatt order
 Stock.sort_gb_eyroc(sector)
 
-# HTML output
+## HTML output ##
+# define header
+th = ["#", "A&ccedil;&otilde;es", "EY[%]", "ROC[%]",
+      "P/L", "ROE[%]",
+      "Osc.Dia[%]", "&Uacute;lt.Fech.[R$]"]
+
 print(prefix, "generating", args.output)
-show(sector, output)
+show(sector, output, title="idigger", tablehdr=th)
