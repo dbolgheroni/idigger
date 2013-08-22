@@ -88,6 +88,8 @@ for c in conf:
     # return on capital
     query = "SELECT roc FROM %s WHERE date=?" % c
     s.roc = db.execute(query, (today,)).fetchone()[0]
+
+    # price-earnings
     query = "SELECT pe FROM %s WHERE date=?" % c
     s.pe = db.execute(query, (today,)).fetchone()[0]
 
@@ -102,6 +104,8 @@ for c in conf:
     # previous close
     query = "SELECT pc FROM %s WHERE date=?" % c
     s.pc = db.execute(query, (today,)).fetchone()[0]
+
+    # only instantiate stocks with both ey and roc
     if s.ey and s.roc:
         sector.append(s)
 
