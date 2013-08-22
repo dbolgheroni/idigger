@@ -80,6 +80,8 @@ sector = []
 for c in conf:
     s = Stock(c)
 
+    # TODO one loop to rule them all
+    # earnings yield
     query = "SELECT ey FROM %s WHERE date=?" % c
     try:
         s.ey = db.execute(query, (today,)).fetchone()[0]
@@ -88,9 +90,46 @@ for c in conf:
                 sep="")
         continue
 
+    # return on capital
     query = "SELECT roc FROM %s WHERE date=?" % c
     try:
         s.roc = db.execute(query, (today,)).fetchone()[0]
+    except TypeError:
+        print(prefix, " empty db entry for ", c, ", skipping",
+                sep="")
+        continue
+
+    # price earnings
+    query = "SELECT pe FROM %s WHERE date=?" % c
+    try:
+        s.pe = db.execute(query, (today,)).fetchone()[0]
+    except TypeError:
+        print(prefix, " empty db entry for ", c, ", skipping",
+                sep="")
+        continue
+
+    # return on equity
+    query = "SELECT roe FROM %s WHERE date=?" % c
+    try:
+        s.roe = db.execute(query, (today,)).fetchone()[0]
+    except TypeError:
+        print(prefix, " empty db entry for ", c, ", skipping",
+                sep="")
+        continue
+
+    # day oscilation
+    query = "SELECT do FROM %s WHERE date=?" % c
+    try:
+        s.do = db.execute(query, (today,)).fetchone()[0]
+    except TypeError:
+        print(prefix, " empty db entry for ", c, ", skipping",
+                sep="")
+        continue
+
+    # previous close
+    query = "SELECT pc FROM %s WHERE date=?" % c
+    try:
+        s.pc = db.execute(query, (today,)).fetchone()[0]
     except TypeError:
         print(prefix, " empty db entry for ", c, ", skipping",
                 sep="")

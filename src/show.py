@@ -70,14 +70,17 @@ def show(sector, output, title="idigger"):
     print(_start_html(), file=output)
     print(_title(title), file=output)
 
+    # TODO generalize
     # table header
-    hdr = ["#", "A&ccedil;&otilde;es", "EY", "ROC"]
+    hdr = ["#", "A&ccedil;&otilde;es", "EY", "ROC",
+           "P/L", "ROE",
+           "Day Osc.", "Prev. Close"]
     print(_table_hdr(hdr), file=output)
 
     # rows
     c = 1
     for s in sector:
-        row = [c, s.code, s.ey, s.roc]
+        row = [c, s.code, s.ey, s.roc, s.pe, s.roe, s.do, s.pc]
         print(_table_row(row), file=output)
         c += 1
 

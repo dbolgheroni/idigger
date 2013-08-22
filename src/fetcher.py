@@ -72,7 +72,7 @@ except IOError:
     print(prefix, " can't open db ", dbfile, ", exiting", sep="")
     exit(1)
 
-# create tables dinamically if it don't exist
+# create tables dynamically if it don't exist
 for c in conf:
     query = "SELECT * FROM sqlite_master WHERE TYPE='table' AND NAME=?"
     result = db.execute(query, (c,))
@@ -86,7 +86,11 @@ for c in conf:
         db.execute("CREATE TABLE %s ( \
                     date INTEGER PRIMARY KEY, \
                     ey DOUBLE, \
-                    roc DOUBLE)" % c)
+                    roc DOUBLE, \
+                    pe DOUBLE, \
+                    roe DOUBLE, \
+                    do DOUBLE, \
+                    pc DOUBLE)" % c)
 
 # instantiate stocks
 if args.D:
@@ -103,15 +107,19 @@ for c in conf:
 for c in conf:
     ey = stock[c].earnings_yield()
     roc = stock[c].return_on_capital()
+    pe = stock[c].price_earnings()
+    roe = stock[c].return_on_equity()
+    do = stock[c].day_oscilation()
+    pc = stock[c].previous_close()
 
     # do not populate database with invalid values
     if ey and roc:
-        # do not populate database with too much decimas
+        # do not populate database with too much decimals
         eyf = "{:.2f}".format(ey)
         rocf = "{:.2f}".format(roc)
 
-        t = (today, eyf, rocf)
-        query = "INSERT INTO %s VALUES (?, ?, ?)" % c
+        t = (today, eyf, rocf, pe, roe, do, pc)
+        query = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?, ?)" % c
         try:
             db.execute(query, t)
         except sqlite3.IntegrityError:
@@ -138,6 +146,10 @@ def print_debug(): # give a scope
         nfa = stock[c].net_fixed_assets()
         ey = stock[c].earnings_yield()
         roc = stock[c].return_on_capital()
+        pe = stock[c].price_earnings()
+        roe = stock[c].return_on_equity()
+        do = stock[c].day_oscilation()
+        pc = stock[c].previous_close()
 
         print(prefix, c.ljust(6), "Valor de mercado".ljust(24, "."), mv)
         print(prefix, c.ljust(6), "Ativo".ljust(24, "."), na)
@@ -149,6 +161,10 @@ def print_debug(): # give a scope
         print(prefix, c.ljust(6), "Net Fixed Assets".ljust(24, "."), nfa)
         print(prefix, c.ljust(6), "EY [%]".ljust(24, "."), ey)
         print(prefix, c.ljust(6), "ROC [%]".ljust(24, "."), roc)
+        print(prefix, c.ljust(6), "P/L".ljust(24, "."), pe)
+        print(prefix, c.ljust(6), "ROE [%]".ljust(24, "."), roe)
+        print(prefix, c.ljust(6), "Oscilação Dia [%]".ljust(24, "."), do)
+        print(prefix, c.ljust(6), "Cotação [R$]".ljust(24, "."), pc)
 
 if debug:
     print(prefix, "debug enabled")

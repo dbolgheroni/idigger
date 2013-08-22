@@ -7,6 +7,8 @@ import urllib.request
 from idiggerconf import *
 from stock import Stock
 
+# TODO named args for 'occline' and 'offset'
+
 # for name conventions, see PEP 8 - Style Guide for Python Code
 class Fundamentus(Stock):
     __baseurl = "http://www.fundamentus.com.br/detalhes.php?papel="
@@ -132,6 +134,26 @@ class Fundamentus(Stock):
 
             return roc * 100
 
+    # price earnings
+    def price_earnings(self):
+        # Fundamentus: P/L
+        return self.__extract_float("P/L", 0, 1)
+
+    # return on equity
+    def return_on_equity(self):
+        # Fundamentus: ROE
+        return self.__extract_float("ROE", 0)
+
+    # day oscilation
+    def day_oscilation(self):
+        # Fundamentus: Oscilações Dia
+        return self.__extract_float("Dia", 0, 1)
+
+    # previous close
+    def previous_close(self):
+        # Fundamentus: Cotação
+        return self.__extract_float("Cotação", 0, 1)
+
     ####### auxiliary private methods #######
     def __extract_int(self, indicator, occline):
         lines = self.__matchlines(self.code, indicator)
@@ -155,12 +177,12 @@ class Fundamentus(Stock):
         if c3:
             return int(c3.group('int'))
 
-    def __extract_float(self, indicator, occline):
+    def __extract_float(self, indicator, occline, offset=2):
         lines = self.__matchlines(self.code, indicator)
 
-        # with floats, the line where the value is located is always 2 
-        # after the occurrence of the indicator
-        content = self.__rawdata[self.code][lines[occline]+2]
+        # the value is located almost always 2 lines below indicator,
+        # but there are exceptions, so use an adjustable offset
+        content = self.__rawdata[self.code][lines[occline]+offset]
 
         regex = re.compile(r"(?P<float>[-]?\d+,\d+)")
         match = regex.search(content)
