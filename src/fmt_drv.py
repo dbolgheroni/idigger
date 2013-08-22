@@ -119,9 +119,7 @@ class Fundamentus(Stock):
 
         if evebit:
             ey = 1 / evebit
-
-            # don't clutter the db
-            return ey * 100
+            return "{:.2f}".format(ey * 100)
 
     # return on capital (ROC)
     def return_on_capital(self):
@@ -131,15 +129,14 @@ class Fundamentus(Stock):
 
         if ebit and nwc and nfa:
             roc = ebit / (nwc + nfa)
+            return "{:.2f}".format(roc * 100)
 
-            return roc * 100
-
-    # price earnings
+    # price-earnings (P/E)
     def price_earnings(self):
         # Fundamentus: P/L
         return self.__extract_float("P/L", 0, 1)
 
-    # return on equity
+    # return on equity (ROE)
     def return_on_equity(self):
         # Fundamentus: ROE
         return self.__extract_float("ROE", 0)
