@@ -112,22 +112,12 @@ for c in conf:
     do = stock[c].day_oscilation()
     pc = stock[c].previous_close()
 
-    # do not populate database with invalid values
-    if ey and roc:
-        # do not populate database with too much decimals
-        eyf = "{:.2f}".format(ey)
-        rocf = "{:.2f}".format(roc)
-
-        t = (today, eyf, rocf, pe, roe, do, pc)
-        query = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?, ?)" % c
-        try:
-            db.execute(query, t)
-        except sqlite3.IntegrityError:
-            print(prefix, " ", c, " date is primary key, skipping",
-                    sep="")
-    else:
-        print(prefix, " invalid value for ", c, ", skipping", sep="")
-        continue
+    t = (today, ey, roc, pe, roe, do, pc)
+    query = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?, ?)" % c
+    try:
+        db.execute(query, t)
+    except sqlite3.IntegrityError:
+        print(prefix, c, "date is primary key, skipping")
 
     db.commit()
 
