@@ -83,59 +83,25 @@ for c in conf:
     # TODO one loop to rule them all
     # earnings yield
     query = "SELECT ey FROM %s WHERE date=?" % c
-    try:
-        s.ey = db.execute(query, (today,)).fetchone()[0]
-    except TypeError:
-        print(prefix, " empty db entry for ", c, ", skipping",
-                sep="")
-        continue
+    s.ey = db.execute(query, (today,)).fetchone()[0]
 
     # return on capital
     query = "SELECT roc FROM %s WHERE date=?" % c
-    try:
-        s.roc = db.execute(query, (today,)).fetchone()[0]
-    except TypeError:
-        print(prefix, " empty db entry for ", c, ", skipping",
-                sep="")
-        continue
-
-    # price earnings
+    s.roc = db.execute(query, (today,)).fetchone()[0]
     query = "SELECT pe FROM %s WHERE date=?" % c
-    try:
-        s.pe = db.execute(query, (today,)).fetchone()[0]
-    except TypeError:
-        print(prefix, " empty db entry for ", c, ", skipping",
-                sep="")
-        continue
+    s.pe = db.execute(query, (today,)).fetchone()[0]
 
     # return on equity
     query = "SELECT roe FROM %s WHERE date=?" % c
-    try:
-        s.roe = db.execute(query, (today,)).fetchone()[0]
-    except TypeError:
-        print(prefix, " empty db entry for ", c, ", skipping",
-                sep="")
-        continue
+    s.roe = db.execute(query, (today,)).fetchone()[0]
 
     # day oscilation
     query = "SELECT do FROM %s WHERE date=?" % c
-    try:
-        s.do = db.execute(query, (today,)).fetchone()[0]
-    except TypeError:
-        print(prefix, " empty db entry for ", c, ", skipping",
-                sep="")
-        continue
+    s.do = db.execute(query, (today,)).fetchone()[0]
 
     # previous close
     query = "SELECT pc FROM %s WHERE date=?" % c
-    try:
-        s.pc = db.execute(query, (today,)).fetchone()[0]
-    except TypeError:
-        print(prefix, " empty db entry for ", c, ", skipping",
-                sep="")
-        continue
-
-    # only instantiate stocks with both values
+    s.pc = db.execute(query, (today,)).fetchone()[0]
     if s.ey and s.roc:
         sector.append(s)
 
