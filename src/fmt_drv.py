@@ -36,9 +36,10 @@ class Fundamentus(Stock):
             # download URL
             url = self.__baseurl + self.code.lower()
             try:
+                #print(self.__prefix, self.code, "downloading data")
                 iurl = urllib.request.urlopen(url)
             except urllib.error.URLError:
-                print(self.__prefix, "failed to fetch data for", self.code)
+                print(self.__prefix, self.code, "failed to fetch data")
                 return None
 
             # write file
