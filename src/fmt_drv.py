@@ -2,6 +2,7 @@
 
 import os
 import re
+import time
 import urllib.request
 
 from idiggerconf import *
@@ -13,7 +14,7 @@ from stock import Stock
 class Fundamentus(Stock):
     __baseurl = "http://www.fundamentus.com.br/detalhes.php?papel="
     __localdir = os.path.join(datadir, today + "-fmt")
-    __rawdata = {}
+    __rawdata = {} # TODO make it a instance variable
     __prefix = "[fmt]"
 
     def __init__(self, c, fetch=True):
@@ -25,28 +26,41 @@ class Fundamentus(Stock):
             # check for directories where files is stored
             if not os.path.exists(self.__localdir):
                 try:
-                    print(self.__prefix, " making ", self.__localdir, "/ dir",
-                            sep="")
+                    print(self.__prefix, " making ", self.__localdir,
+                            "/ dir", sep="")
                     os.makedirs(self.__localdir)
                 except OSError:
                     print(self.__prefix, " can't make ", self.__localdir,
                             "/, exiting", sep="")
                     exit(1)
 
-            # download URL
             url = self.__baseurl + self.code.lower()
-            try:
-                #print(self.__prefix, self.code, "downloading data")
-                iurl = urllib.request.urlopen(url)
-            except urllib.error.URLError:
-                print(self.__prefix, self.code, "failed to fetch data")
-                return None
+
+            # download URL
+            print(self.__prefix, self.code, "downloading data")
+
+            attempts = 0
+            while True:
+                try:
+                    iurl = urllib.request.urlopen(url)
+                    break
+                except urllib.error.URLError:
+                    attempts += 1
+                    print(prefix, self.code,
+                            "download failed, retrying in 30 seconds")
+                    time.sleep(30) # wait 30 s to retry
+
+                    if attempts == 5:
+                        print(prefix, self.code,
+                                "download failed, giving up")
+                        return None
 
             # write file
             try:
                 ourl = open(localfile, "w")
             except IOError:
-                print(self.__prefix, "can't open", localfile, "for writing")
+                print(self.__prefix, "can't open", localfile,
+                        "for writing")
 
             contents = iurl.read().decode("iso-8859-1")
             ourl.write(contents)
@@ -56,7 +70,6 @@ class Fundamentus(Stock):
             ourl.close()
 
         # read file
-
         try:
             f = open(localfile)
         except:
