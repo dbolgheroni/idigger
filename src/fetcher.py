@@ -101,39 +101,12 @@ else:
 
 stock = {}
 for c in conf:
+    # stocks which failed to instantiate are marked as None
     stock[c] = Fundamentus(c, fetch=fetchopt)
 
 # populate database
-for c in conf:
-    ey = stock[c].earnings_yield()
-    roc = stock[c].return_on_capital()
-    pe = stock[c].price_earnings()
-    roe = stock[c].return_on_equity()
-    do = stock[c].day_oscilation()
-    pc = stock[c].previous_close()
-
-    t = (today, ey, roc, pe, roe, do, pc)
-    query = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?, ?)" % c
-    try:
-        db.execute(query, t)
-    except sqlite3.IntegrityError:
-        print(prefix, c, "date is primary key, skipping")
-
-    db.commit()
-
-# debug
-def print_debug(): # give a scope
-    prefix = "[dbg]"
-
-    for c in conf:
-        mv = stock[c].market_value()
-        na = stock[c].net_assets()
-        nnfa = stock[c].net_nonfixed_assets()
-        ebit = stock[c].ebit()
-        evebit = stock[c].ev_ebit()
-        mvnwc = stock[c].market_value_net_working_capital()
-        nwc = stock[c].net_working_capital()
-        nfa = stock[c].net_fixed_assets()
+for c in stock.keys(): # readability
+    if stock[c]:
         ey = stock[c].earnings_yield()
         roc = stock[c].return_on_capital()
         pe = stock[c].price_earnings()
@@ -141,20 +114,50 @@ def print_debug(): # give a scope
         do = stock[c].day_oscilation()
         pc = stock[c].previous_close()
 
-        print(prefix, c.ljust(6), "Valor de mercado".ljust(24, "."), mv)
-        print(prefix, c.ljust(6), "Ativo".ljust(24, "."), na)
-        print(prefix, c.ljust(6), "Ativo Circulante".ljust(24, "."), nnfa)
-        print(prefix, c.ljust(6), "EBIT".ljust(24, "."), ebit)
-        print(prefix, c.ljust(6), "EV/EBIT".ljust(24, "."), evebit)
-        print(prefix, c.ljust(6), "P/Cap. Giro".ljust(24, "."), mvnwc)
-        print(prefix, c.ljust(6), "Net Working Capital".ljust(24, "."), nwc)
-        print(prefix, c.ljust(6), "Net Fixed Assets".ljust(24, "."), nfa)
-        print(prefix, c.ljust(6), "EY [%]".ljust(24, "."), ey)
-        print(prefix, c.ljust(6), "ROC [%]".ljust(24, "."), roc)
-        print(prefix, c.ljust(6), "P/L".ljust(24, "."), pe)
-        print(prefix, c.ljust(6), "ROE [%]".ljust(24, "."), roe)
-        print(prefix, c.ljust(6), "Oscilação Dia [%]".ljust(24, "."), do)
-        print(prefix, c.ljust(6), "Cotação [R$]".ljust(24, "."), pc)
+        t = (today, ey, roc, pe, roe, do, pc)
+        query = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?, ?)" % c
+        try:
+            db.execute(query, t)
+        except sqlite3.IntegrityError:
+            print(prefix, c, "date is primary key, skipping")
+
+        db.commit()
+
+# debug
+def print_debug(): # give a scope
+    prefix = "[dbg]"
+
+    for c in stock.keys():
+        if stock[c]:
+            mv = stock[c].market_value()
+            na = stock[c].net_assets()
+            nnfa = stock[c].net_nonfixed_assets()
+            ebit = stock[c].ebit()
+            evebit = stock[c].ev_ebit()
+            mvnwc = stock[c].market_value_net_working_capital()
+            nwc = stock[c].net_working_capital()
+            nfa = stock[c].net_fixed_assets()
+            ey = stock[c].earnings_yield()
+            roc = stock[c].return_on_capital()
+            pe = stock[c].price_earnings()
+            roe = stock[c].return_on_equity()
+            do = stock[c].day_oscilation()
+            pc = stock[c].previous_close()
+
+            print(prefix, c.ljust(6), "Valor de mercado".ljust(24, "."), mv)
+            print(prefix, c.ljust(6), "Ativo".ljust(24, "."), na)
+            print(prefix, c.ljust(6), "Ativo Circulante".ljust(24, "."), nnfa)
+            print(prefix, c.ljust(6), "EBIT".ljust(24, "."), ebit)
+            print(prefix, c.ljust(6), "EV/EBIT".ljust(24, "."), evebit)
+            print(prefix, c.ljust(6), "P/Cap. Giro".ljust(24, "."), mvnwc)
+            print(prefix, c.ljust(6), "Net Working Capital".ljust(24, "."), nwc)
+            print(prefix, c.ljust(6), "Net Fixed Assets".ljust(24, "."), nfa)
+            print(prefix, c.ljust(6), "EY [%]".ljust(24, "."), ey)
+            print(prefix, c.ljust(6), "ROC [%]".ljust(24, "."), roc)
+            print(prefix, c.ljust(6), "P/L".ljust(24, "."), pe)
+            print(prefix, c.ljust(6), "ROE [%]".ljust(24, "."), roe)
+            print(prefix, c.ljust(6), "Oscilação Dia [%]".ljust(24, "."), do)
+            print(prefix, c.ljust(6), "Cotação [R$]".ljust(24, "."), pc)
 
 if debug:
     print(prefix, "debug enabled")
