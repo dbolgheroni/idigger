@@ -15,7 +15,7 @@ from stock import Stock
 class Fundamentus(Stock):
     __baseurl = "http://www.fundamentus.com.br/detalhes.php?papel="
     __localdir = os.path.join(datadir, today + "-fmt")
-    __rawdata = {} # TODO make it a instance variable
+    __rawdata = {} # TODO make it an instance variable
     __prefix = "[fmt]"
 
     def __init__(self, c, fetch=True):
@@ -38,7 +38,6 @@ class Fundamentus(Stock):
             url = self.__baseurl + self.code.lower()
 
             # download URL
-
             attempts = 0
             while True:
                 try:
