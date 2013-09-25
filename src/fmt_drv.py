@@ -4,6 +4,7 @@ import os
 import re
 import time
 import urllib.request
+import urllib.error
 
 from idiggerconf import *
 from stock import Stock
@@ -37,21 +38,21 @@ class Fundamentus(Stock):
             url = self.__baseurl + self.code.lower()
 
             # download URL
-            print(self.__prefix, self.code, "downloading data")
 
             attempts = 0
             while True:
                 try:
+                    print(self.__prefix, self.code, "downloading data")
                     iurl = urllib.request.urlopen(url)
                     break
                 except urllib.error.URLError:
                     attempts += 1
-                    print(prefix, self.code,
-                            "download failed, retrying in 30 seconds")
+                    print(self.__prefix, self.code,
+                            "error downloading, retrying in 30 seconds")
                     time.sleep(30) # wait 30 s to retry
 
-                    if attempts == 5:
-                        print(prefix, self.code,
+                    if attempts == 5: # max retry
+                        print(self.__prefix, self.code,
                                 "download failed, giving up")
                         return None
 
