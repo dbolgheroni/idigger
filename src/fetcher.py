@@ -32,7 +32,6 @@ import os
 import sqlite3
 
 # import idigger modules
-#import gi
 from stock import Stock
 from fmt_drv import Fundamentus
 from idiggerconf import *
