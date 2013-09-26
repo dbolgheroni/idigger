@@ -21,5 +21,5 @@ tmpdir = os.path.join(homedir, "tmp")
 dbfile = os.path.join(homedir, "idigger.db")
 
 # debug switch
-debug = True
-#debug = False
+#debug = True
+debug = False
