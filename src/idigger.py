@@ -36,9 +36,6 @@ from idiggerconf import *
 from show import *
 from stock import *
 
-# local definitions
-prefix = "[idg]"
-
 opts = argparse.ArgumentParser()
 
 opts.add_argument("conf", 
@@ -47,7 +44,11 @@ opts.add_argument("output",
         help="the filename for the HTML output")
 args = opts.parse_args()
 
+# local definitions
+prefix = "[idg]"
+
 # presentation
+print(prefix, "idigger started")
 print(prefix, "reading conf file", args.conf)
 
 # open conf file

@@ -52,6 +52,7 @@ args = opts.parse_args()
 prefix = "[fch]"
 
 # presentation
+print(prefix, "fetcher started")
 print(prefix, "conf file:", args.conf)
 
 # open conf file
