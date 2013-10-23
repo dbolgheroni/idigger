@@ -171,7 +171,12 @@ class Fundamentus(Stock):
 
         # with ints, the line where the value is located is always 1
         # after the occurrence of the indicator
-        content = self.__rawdata[self.code][lines[occline]+1]
+        try:
+            content = self.__rawdata[self.code][lines[occline]+1]
+        except IndexError:
+            print(self.__prefix, self.code,
+                    "incompatible raw data, consider deleting the stock")
+            return None
 
         # remove points
         regex = re.compile(r"\.")
@@ -193,7 +198,12 @@ class Fundamentus(Stock):
 
         # the value is located almost always 2 lines below indicator,
         # but there are exceptions, so use an adjustable offset
-        content = self.__rawdata[self.code][lines[occline]+offset]
+        try:
+            content = self.__rawdata[self.code][lines[occline]+offset]
+        except IndexError:
+            print(self.__prefix, self.code,
+                    "incompatible raw data, consider deleting the stock")
+            return None
 
         regex = re.compile(r"(?P<float>[-]?\d+,\d+)")
         match = regex.search(content)
