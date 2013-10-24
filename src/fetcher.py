@@ -38,14 +38,13 @@ from idiggerconf import *
 
 opts = argparse.ArgumentParser()
 
-opts.add_argument("conf", 
-        help="the file which contains stocks codes, one per line")
+opts.add_argument("-d",
+        help="use raw data for the day specified in YYYYMMDD format")
 opts.add_argument("-D",
         help="don't dowload info from source (useful to debug)",
         action="store_true")
-# unused yet, there is only 1 driver
-opts.add_argument("-d",
-        help="specify which driver to use")
+opts.add_argument("conf",
+        help="the file which contains stocks codes, one per line")
 args = opts.parse_args()
 
 # local definitions
@@ -54,6 +53,10 @@ prefix = "[fch]"
 # presentation
 print(prefix, "fetcher started")
 print(prefix, "conf file:", args.conf)
+
+# -d date argument
+if (args.d):
+    today = args.d
 
 # open conf file
 try:
