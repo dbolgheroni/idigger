@@ -14,24 +14,24 @@ from stock import Stock
 # for name conventions, see PEP 8 - Style Guide for Python Code
 class Fundamentus(Stock):
     __baseurl = "http://www.fundamentus.com.br/detalhes.php?papel="
-    __localdir = os.path.join(datadir, today + "-fmt")
     __rawdata = {} # TODO make it an instance variable
     __prefix = "[fmt]"
 
-    def __init__(self, c, fetch=True):
+    def __init__(self, c, fetch=True, date=today):
         super().__init__(c)
 
-        localfile = os.path.join(self.__localdir, self.code + ".html")
+        localdir = os.path.join(datadir, date + "-fmt")
+        localfile = os.path.join(localdir, self.code + ".html")
 
         if fetch:
             # check for directories where files is stored
-            if not os.path.exists(self.__localdir):
+            if not os.path.exists(self.localdir):
                 try:
-                    print(self.__prefix, " making ", self.__localdir,
+                    print(self.__prefix, " making ", self.localdir,
                             "/ dir", sep="")
-                    os.makedirs(self.__localdir)
+                    os.makedirs(self.localdir)
                 except OSError:
-                    print(self.__prefix, " can't make ", self.__localdir,
+                    print(self.__prefix, " can't make ", self.localdir,
                             "/, exiting", sep="")
                     exit(1)
 

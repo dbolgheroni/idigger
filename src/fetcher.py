@@ -105,7 +105,7 @@ else:
 stock = {}
 for c in conf:
     # stocks which failed to instantiate are marked as None
-    stock[c] = Fundamentus(c, fetch=fetchopt)
+    stock[c] = Fundamentus(c, fetch=fetchopt, date=today)
 
 # populate database
 for c in stock.keys(): # readability
