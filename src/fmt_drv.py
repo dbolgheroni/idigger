@@ -25,13 +25,13 @@ class Fundamentus(Stock):
 
         if fetch:
             # check for directories where files is stored
-            if not os.path.exists(self.localdir):
+            if not os.path.exists(localdir):
                 try:
-                    print(self.__prefix, " making ", self.localdir,
+                    print(self.__prefix, " making ", localdir,
                             "/ dir", sep="")
-                    os.makedirs(self.localdir)
+                    os.makedirs(localdir)
                 except OSError:
-                    print(self.__prefix, " can't make ", self.localdir,
+                    print(self.__prefix, " can't make ", localdir,
                             "/, exiting", sep="")
                     exit(1)
 
