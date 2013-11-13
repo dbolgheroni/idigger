@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Ferramentas Financeiras</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<script type="text/javascript">
+function convert_iaim() {
+  var ia = document.getElementById("ia1").value;
+
+  var im = (Math.pow((1 + ia/100), 1/12) - 1) * 100;
+  var imn = Math.ceil(im * 1000) / 1000; /* 3 decimals */
+  document.getElementById("im1").value = imn;
+}
+
+function convert_imia() {
+  var im = document.getElementById("im2").value;
+
+  var ia = (Math.pow((1 + im/100), 12) - 1) * 100;
+  var ian = Math.ceil(ia * 1000) / 1000; /* 3 decimals */
+  document.getElementById("ia2").value = ian;
+}
+</script>
+</head>
+
+<body>
+<div
+    style="margin:30px;padding:5px;background-color:lightgray;font-color:#FFFFFF;text-align:left;">
+  <b>Juros Anual para Juros Mensal</b><br>
+  <input id="ia1" type="text"> % a.a.
+  <input id="im1" type="text" disabled> % a.m.
+  <input type="button" value="converter" onclick="convert_iaim()">
+</div>
+
+<div
+    style="margin:30px;padding:5px;background-color:lightgray;text-align:left;">
+  <b>Juros Mensal para Juros Anual</b><br>
+  <input id="im2" type="text"> % a.m.
+  <input id="ia2" type="text" disabled> % a.a.
+  <input type="button" value="converter" onclick="convert_imia()">
+</div>
+</body>
+
+</html>
