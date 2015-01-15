@@ -41,7 +41,7 @@ opts = argparse.ArgumentParser()
 opts.add_argument("-d",
         help="use raw data for the day specified in YYYYMMDD format")
 opts.add_argument("-D",
-        help="don't dowload info from source (useful to debug)",
+        help="do not download info from source (useful to debug)",
         action="store_true")
 opts.add_argument("conf",
         help="the file which contains stocks codes, one per line")
