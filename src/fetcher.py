@@ -78,7 +78,7 @@ except IOError:
     print(prefix, " can't open db ", dbfile, ", exiting", sep="")
     exit(1)
 
-# create tables dynamically if it don't exist
+# create tables dynamically if they don't exist
 for c in conf:
     query = "SELECT * FROM sqlite_master WHERE TYPE='table' AND NAME=?"
     result = db.execute(query, (c,))
