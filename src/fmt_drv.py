@@ -25,23 +25,31 @@ class FundamentusParser(HTMLParser):
     def result(self):
         return self.__result
 
-    # some values are returned with a lot of leading spaces, so we need
-    # to delete it
-    def delete_space(self, value):
-        regex = re.compile(r"[[:space:]]+")
-        return regex.sub("", value)
-
-    # some integer values are returned as 100.000.000.000 and these are
-    # not convertible into an integer unless we remove the dots
-    def delete_int_dot(self, value):
+    def extract_int(self, value):
+        # remove points
         regex = re.compile(r"\.")
-        return int(regex.sub("", value))
+        c1 = regex.sub("", value)
 
-    # some float values are returned as 100,00 but decimal separation in
-    # common computer systems is the dot, so we need to substitute
-    def sub_comma_for_point(self, value):
-        regex = re.compile(r",")
-        return regex.sub(".", value)
+        # extract the number per se
+        regex = re.compile(r"(?P<int>\d+)")
+        c2 = regex.search(c1)
+
+        if c2:
+            return int(c2.group('int'))
+
+
+    def extract_float(self, value):
+        regex = re.compile(r"(?P<float>[-]?\d+,\d+)")
+        match = regex.search(value)
+
+        if match:
+            c1 = match.group('float')
+
+            # Brazil uses 3,14 instead of 3.14 (computer notation), so
+            # change commas for points
+            regex = re.compile(r",")
+            c2 = regex.sub(".", c1)
+            return float(c2)
 
     def handle_starttag(self, tag, attrs):
         if self.__near:
@@ -134,92 +142,53 @@ class Fundamentus(Stock):
         f.seek(0)
         self.__contents = f.read()
 
-    ####### values parsed from page #######
     # market value
     def market_value(self):
-        # Fundamentus: Valor de mercado (P)
-        return self.__extract_int("Valor de mercado", 0)
-
-    # market value 2
-    def market_value2(self):
         # Fundamentus: Valor de mercado (P)
         parser = FundamentusParser('Valor de mercado')
         parser.feed(self.__contents)
 
-        # remove points
-        return parser.delete_int_dot(parser.result)
+        return parser.extract_int(parser.result)
 
     # net assets
     def net_assets(self):
         # Fundamentus: Ativo
-        return self.__extract_int("Ativo", 7)
-
-    # net assets 2
-    def net_assets2(self):
-        # Fundamentus: Ativo
         parser = FundamentusParser('Ativo')
         parser.feed(self.__contents)
 
-        # remove points
-        return parser.delete_int_dot(parser.result)
+        return parser.extract_int(parser.result)
 
     # net non-fixed assets
     def net_nonfixed_assets(self):
         # Fundamentus: Ativo Circulante
-        return self.__extract_int("Ativo Circulante", 2)
-
-    # net non-fixed assets 2
-    def net_nonfixed_assets2(self):
-        # Fundamentus: Ativo Circulante 2
         parser = FundamentusParser('Ativo Circulante')
         parser.feed(self.__contents)
 
-        # remove points
-        return parser.delete_int_dot(parser.result)
+        return parser.extract_int(parser.result)
 
     # ebit
     def ebit(self):
         # Fundamentus: EBIT
-        return self.__extract_int("EBIT", 5)
-
-    # ebit 2
-    def ebit2(self):
-        # Fundamentus: EBIT
         parser = FundamentusParser('EBIT')
         parser.feed(self.__contents)
 
-        # remove points
-        return parser.delete_int_dot(parser.result)
+        return parser.extract_int(parser.result)
 
-    # ev / ebit
     def ev_ebit(self):
-        # Fundamentus: EV / EBIT
-        return self.__extract_float("EBIT", 4)
-
-    # ev / ebit 2
-    def ev_ebit2(self):
         # Fundamentus: EV / EBIT
         parser = FundamentusParser('EV / EBIT')
         parser.feed(self.__contents)
 
-        rresult = parser.delete_space(parser.result)
-        return float(parser.sub_comma_for_point(rresult))
+        return parser.extract_float(parser.result)
 
     # market value / net working capital
     def market_value_net_working_capital(self):
         # Fundamentus: P/Cap. Giro
-        return self.__extract_float("Cap\. Giro", 0)
-
-    # market value / net working capital 2
-    def market_value_net_working_capital2(self):
-        # Fundamentus: P/Cap. Giro
         parser = FundamentusParser('P/Cap. Giro')
         parser.feed(self.__contents)
 
-        rresult = parser.delete_space(parser.result)
-        return float(parser.sub_comma_for_point(rresult))
+        return parser.extract_float(parser.result)
 
-    ####### values calculated from values extract from page #######
     # net working capital
     def net_working_capital(self):
         mv = self.market_value()
@@ -260,88 +229,23 @@ class Fundamentus(Stock):
     # price-earnings (P/E)
     def price_earnings(self):
         # Fundamentus: P/L
-        return self.__extract_float("P/L", 0, 1)
+        parser = FundamentusParser('P/L')
+        parser.feed(self.__contents)
+
+        return parser.extract_float(parser.result)
 
     # return on equity (ROE)
     def return_on_equity(self):
         # Fundamentus: ROE
-        return self.__extract_float("ROE", 0)
+        parser = FundamentusParser('ROE')
+        parser.feed(self.__contents)
 
-    # day oscilation
-    def day_oscilation(self):
-        # Fundamentus: Oscilações Dia
-        return self.__extract_float("Dia", 0, 1)
+        return parser.extract_float(parser.result)
 
     # previous close
     def previous_close(self):
         # Fundamentus: Cotação
-        return self.__extract_float("Cotação", 0, 1)
+        parser = FundamentusParser('Cotação')
+        parser.feed(self.__contents)
 
-    ####### auxiliary private methods #######
-    def __extract_int(self, indicator, occline):
-        lines = self.__matchlines(self.code, indicator)
-
-        # with ints, the line where the value is located is always 1
-        # after the occurrence of the indicator
-        try:
-            content = self.__rawdata[self.code][lines[occline]+1]
-        except IndexError:
-            print(self.__prefix, self.code,
-                    "incompatible raw data, consider deleting the stock")
-            return None
-
-        # remove points
-        regex = re.compile(r"\.")
-        c1 = regex.sub("", content)
-
-        # clean whitespace/tags before int
-        regex = re.compile(r".*\">")
-        c2 = regex.sub("", c1)
-
-        # extract the number per se
-        regex = re.compile(r"(?P<int>\d+)")
-        c3 = regex.search(c2)
-
-        if c3:
-            return int(c3.group('int'))
-
-    def __extract_float(self, indicator, occline, offset=2):
-        lines = self.__matchlines(self.code, indicator)
-
-        # the value is located almost always 2 lines below indicator,
-        # but there are exceptions, so use an adjustable offset
-        try:
-            content = self.__rawdata[self.code][lines[occline]+offset]
-        except IndexError:
-            print(self.__prefix, self.code,
-                    "incompatible raw data, consider deleting the stock")
-            return None
-
-        regex = re.compile(r"(?P<float>[-]?\d+,\d+)")
-        match = regex.search(content)
-
-        if match:
-            c1 = match.group('float')
-
-            # Brazil uses 3,14 instead of 3.14 (computer notation), so
-            # change commas for points
-            regex = re.compile(r",")
-            c2 = regex.sub(".", c1)
-            return float(c2)
-
-    # return a list with the line number where every occurrence of the
-    # indicator occurs; it's a hint of where to find the real value
-    def __matchlines(self, code, indicator):
-        lines = []
-
-        c = 0
-        for l in self.__rawdata[code]:
-            pattern = re.compile(indicator)
-            match = pattern.search(l)
-
-            if match:
-                lines.append(c)
-
-            c += 1
-
-        return lines
+        return parser.extract_float(parser.result)

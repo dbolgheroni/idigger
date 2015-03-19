@@ -95,7 +95,6 @@ for c in conf:
                     roc DOUBLE, \
                     pe DOUBLE, \
                     roe DOUBLE, \
-                    do DOUBLE, \
                     pc DOUBLE)" % c)
 
 # instantiate stocks
@@ -117,11 +116,10 @@ for c in stock.keys(): # readability
         roc = stock[c].return_on_capital()
         pe = stock[c].price_earnings()
         roe = stock[c].return_on_equity()
-        do = stock[c].day_oscilation()
         pc = stock[c].previous_close()
 
-        t = (today, ey, roc, pe, roe, do, pc)
-        query = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?, ?)" % c
+        t = (today, ey, roc, pe, roe, pc)
+        query = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?)" % c
         try:
             db.execute(query, t)
         except sqlite3.IntegrityError:
@@ -136,45 +134,31 @@ def print_debug(): # give a scope
     for c in stock.keys():
         if stock[c]:
             mv = stock[c].market_value()
-            mv2 = stock[c].market_value2()
             na = stock[c].net_assets()
-            na2 = stock[c].net_assets2()
             nnfa = stock[c].net_nonfixed_assets()
-            nnfa2 = stock[c].net_nonfixed_assets2()
             ebit = stock[c].ebit()
-            ebit2 = stock[c].ebit2()
             evebit = stock[c].ev_ebit()
-            evebit2 = stock[c].ev_ebit2()
             mvnwc = stock[c].market_value_net_working_capital()
-            mvnwc2 = stock[c].market_value_net_working_capital2()
             nwc = stock[c].net_working_capital()
             nfa = stock[c].net_fixed_assets()
             ey = stock[c].earnings_yield()
             roc = stock[c].return_on_capital()
             pe = stock[c].price_earnings()
             roe = stock[c].return_on_equity()
-            do = stock[c].day_oscilation()
             pc = stock[c].previous_close()
 
             print(prefix, c.ljust(6), "Valor de mercado".ljust(24, "."), mv)
-            print(prefix, c.ljust(6), "Valor de mercado 2".ljust(24, "."), mv2)
             print(prefix, c.ljust(6), "Ativo".ljust(24, "."), na)
-            print(prefix, c.ljust(6), "Ativo 2".ljust(24, "."), na2)
             print(prefix, c.ljust(6), "Ativo Circulante".ljust(24, "."), nnfa)
-            print(prefix, c.ljust(6), "Ativo Circulante 2".ljust(24, "."), nnfa2)
             print(prefix, c.ljust(6), "EBIT".ljust(24, "."), ebit)
-            print(prefix, c.ljust(6), "EBIT 2".ljust(24, "."), ebit)
             print(prefix, c.ljust(6), "EV / EBIT".ljust(24, "."), evebit)
-            print(prefix, c.ljust(6), "EV / EBIT 2".ljust(24, "."), evebit2)
             print(prefix, c.ljust(6), "P/Cap. Giro".ljust(24, "."), mvnwc)
-            print(prefix, c.ljust(6), "P/Cap. Giro 2".ljust(24, "."), mvnwc2)
             print(prefix, c.ljust(6), "Net Working Capital".ljust(24, "."), nwc)
             print(prefix, c.ljust(6), "Net Fixed Assets".ljust(24, "."), nfa)
             print(prefix, c.ljust(6), "EY [%]".ljust(24, "."), ey)
             print(prefix, c.ljust(6), "ROC [%]".ljust(24, "."), roc)
             print(prefix, c.ljust(6), "P/L".ljust(24, "."), pe)
             print(prefix, c.ljust(6), "ROE [%]".ljust(24, "."), roe)
-            print(prefix, c.ljust(6), "Oscilação Dia [%]".ljust(24, "."), do)
             print(prefix, c.ljust(6), "Cotação [R$]".ljust(24, "."), pc)
 
 if debug:
