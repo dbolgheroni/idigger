@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright (c) 2012, Daniel Bolgheroni. All rights reserved.
+# Copyright (c) 2012-2015, Daniel Bolgheroni. All rights reserved.
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -47,6 +47,9 @@ opts.add_argument("conf",
         help="the file which contains stocks codes, one per line")
 args = opts.parse_args()
 
+# enable debug
+debug = True
+
 # local definitions
 prefix = "[fch]"
 
@@ -75,7 +78,7 @@ except IOError:
     print(prefix, " can't open db ", dbfile, ", exiting", sep="")
     exit(1)
 
-# create tables dynamically if it don't exist
+# create tables dynamically if they don't exist
 for c in conf:
     query = "SELECT * FROM sqlite_master WHERE TYPE='table' AND NAME=?"
     result = db.execute(query, (c,))
@@ -92,7 +95,6 @@ for c in conf:
                     roc DOUBLE, \
                     pe DOUBLE, \
                     roe DOUBLE, \
-                    do DOUBLE, \
                     pc DOUBLE)" % c)
 
 # instantiate stocks
@@ -114,11 +116,10 @@ for c in stock.keys(): # readability
         roc = stock[c].return_on_capital()
         pe = stock[c].price_earnings()
         roe = stock[c].return_on_equity()
-        do = stock[c].day_oscilation()
         pc = stock[c].previous_close()
 
-        t = (today, ey, roc, pe, roe, do, pc)
-        query = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?, ?)" % c
+        t = (today, ey, roc, pe, roe, pc)
+        query = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?)" % c
         try:
             db.execute(query, t)
         except sqlite3.IntegrityError:
@@ -144,14 +145,13 @@ def print_debug(): # give a scope
             roc = stock[c].return_on_capital()
             pe = stock[c].price_earnings()
             roe = stock[c].return_on_equity()
-            do = stock[c].day_oscilation()
             pc = stock[c].previous_close()
 
             print(prefix, c.ljust(6), "Valor de mercado".ljust(24, "."), mv)
             print(prefix, c.ljust(6), "Ativo".ljust(24, "."), na)
             print(prefix, c.ljust(6), "Ativo Circulante".ljust(24, "."), nnfa)
             print(prefix, c.ljust(6), "EBIT".ljust(24, "."), ebit)
-            print(prefix, c.ljust(6), "EV/EBIT".ljust(24, "."), evebit)
+            print(prefix, c.ljust(6), "EV / EBIT".ljust(24, "."), evebit)
             print(prefix, c.ljust(6), "P/Cap. Giro".ljust(24, "."), mvnwc)
             print(prefix, c.ljust(6), "Net Working Capital".ljust(24, "."), nwc)
             print(prefix, c.ljust(6), "Net Fixed Assets".ljust(24, "."), nfa)
@@ -159,7 +159,6 @@ def print_debug(): # give a scope
             print(prefix, c.ljust(6), "ROC [%]".ljust(24, "."), roc)
             print(prefix, c.ljust(6), "P/L".ljust(24, "."), pe)
             print(prefix, c.ljust(6), "ROE [%]".ljust(24, "."), roe)
-            print(prefix, c.ljust(6), "Oscilação Dia [%]".ljust(24, "."), do)
             print(prefix, c.ljust(6), "Cotação [R$]".ljust(24, "."), pc)
 
 if debug:
