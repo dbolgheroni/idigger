@@ -28,7 +28,11 @@ class FundamentusParser(HTMLParser):
     def extract_int(self, value):
         # remove points
         regex = re.compile(r"\.")
-        c1 = regex.sub("", value)
+        try:
+            c1 = regex.sub("", value)
+        except TypeError:
+            #print("lookup=", self.__lookup, ", value=", value, sep="")
+            return None
 
         # extract the number per se
         regex = re.compile(r"(?P<int>\d+)")
@@ -40,7 +44,11 @@ class FundamentusParser(HTMLParser):
 
     def extract_float(self, value):
         regex = re.compile(r"(?P<float>[-]?\d+,\d+)")
-        match = regex.search(value)
+        try:
+            match = regex.search(value)
+        except TypeError:
+            #print("lookup=", self.__lookup, ", value=", value, sep="")
+            return None
 
         if match:
             c1 = match.group('float')
