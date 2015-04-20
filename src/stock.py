@@ -1,8 +1,8 @@
 # Stock class
 
 class Stock:
-    def __init__(self, c):
-        self.code = c
+    #def __init__(self, c):
+    #    self.code = c
 
     ######## P/E and ROE class methods #######
     # sort from low to high
