@@ -1,13 +1,18 @@
 # driver module to handle Fundamentus provider
+# -*- coding: utf-8 -*-
+
+from __future__ import print_function
 
 import os
 import re
 import time
-import urllib.request
-import urllib.error
-from html.parser import HTMLParser
+#import urllib.request
+#import urllib.error
+import urllib2
+#from html.parser import HTMLParser
+from HTMLParser import HTMLParser
 
-from idiggerconf import *
+from conf import *
 from stock import Stock
 
 
@@ -87,7 +92,7 @@ class Fundamentus(Stock):
     __contents = None
 
     def __init__(self, c, fetch=True, date=today):
-        super().__init__(c)
+        self.code = c
 
         localdir = os.path.join(datadir, date + "-fmt")
         localfile = os.path.join(localdir, self.code + ".html")
@@ -111,9 +116,11 @@ class Fundamentus(Stock):
             while True:
                 try:
                     #print(self.__prefix, self.code, "downloading data")
-                    iurl = urllib.request.urlopen(url)
+                    #iurl = urllib.request.urlopen(url)
+                    iurl = urllib2.urlopen(url)
                     break
-                except urllib.error.URLError:
+                #except urllib.error.URLError:
+                except urllib2.URLError:
                     attempts += 1
                     print(self.__prefix, self.code,
                             "error downloading, retrying in 30 seconds")
@@ -132,7 +139,7 @@ class Fundamentus(Stock):
                         "for writing")
 
             self.__contents = iurl.read().decode("iso-8859-1")
-            ourl.write(self.__contents)
+            ourl.write(self.__contents.encode('utf-8'))
 
             # close descriptors
             iurl.close()
