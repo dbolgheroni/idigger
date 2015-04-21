@@ -36,6 +36,7 @@ from sqlalchemy.exc import IntegrityError
 
 from models import Base, Stock
 from fmt_drv import Fundamentus
+from debug import print_stock
 
 # local definitions
 prefix = "[fch]"
@@ -77,30 +78,46 @@ if args.d:
 if args.D:
     fetchopt = False
 else:
-    print(prefix, "downloading raw data")
     fetchopt = True
 
-##
+# instantiate stocks
+# the complexity is hidden inside the driver and in the Stock class
 today = datetime.datetime.today();
 todaystr = today.strftime('%Y%m%d')
-stock = {}
+print(prefix, 'downloading raw data and parsing stock info')
 for code in conf:
     # stocks which failed to instantiate are marked as None
-    stock[code] = Fundamentus(code, fetch=fetchopt, date=todaystr)
+    Fundamentus(code, fetch=fetchopt, date=todaystr);
+
+# sorting, and it's where the Greenblatt method actually is
+Stock.sort_ey()
+Stock.sort_roc()
+Stock.sort_gb_eyroc()
+Stock.sort_pe()
+Stock.sort_roe()
+Stock.sort_gb_peroe()
 
 # populate database
-for code in stock.keys(): # readability
-    print(prefix, 'parsing ', code)
-    if stock[code]:
-        ey = stock[code].earnings_yield()
-        roc = stock[code].return_on_capital()
-        pe = stock[code].price_earnings()
-        roe = stock[code].return_on_equity()
-        pc = stock[code].previous_close()
-        x = Stock(date=today, code=code, \
-                ey=ey, roc=roc, pe=pe, roe=roe, pc=pc)
+# use a leading underscore to differ from the model access to the db
+for stock in Stock.sector:
+    x = Stock( \
+            date = today, \
+            code = stock.code, \
+            ey = stock._ey, \
+            roc = stock._roc, \
+            pe = stock._pe, \
+            roe = stock._roe, \
+            pc = stock._pc, \
 
-        s.add(x)
+            ey_order = stock.ey_order, \
+            roc_order = stock.roc_order, \
+            gb_eyroc_order = stock.gb_eyroc_order, \
+
+            pe_order = stock.pe_order, \
+            roe_order = stock.roe_order, \
+            gb_peroe_order = stock.gb_peroe_order)
+
+    s.add(x)
 
 print(prefix, 'commiting to database')
 try:
@@ -109,44 +126,6 @@ except IntegrityError:
     print(prefix, 'error commiting to database')
 
 # debug
-def print_debug(): # give a scope
-    prefix = "[dbg]"
-
-    for code in stock.keys():
-        if stock[code]:
-            mv = stock[code].market_value()
-            na = stock[code].net_assets()
-            nnfa = stock[code].net_nonfixed_assets()
-            ebit = stock[code].ebit()
-            evebit = stock[code].ev_ebit()
-            mvnwc = stock[code].market_value_net_working_capital()
-            nwc = stock[code].net_working_capital()
-            nfa = stock[code].net_fixed_assets()
-            ey = stock[code].earnings_yield()
-            roc = stock[code].return_on_capital()
-            pe = stock[code].price_earnings()
-            roe = stock[code].return_on_equity()
-            pc = stock[code].previous_close()
-
-            print(prefix, code.ljust(6), "Valor de mercado".ljust(24, "."), mv)
-            print(prefix, code.ljust(6), "Ativo".ljust(24, "."), na)
-            print(prefix, code.ljust(6), "Ativo Circulante".ljust(24, "."), nnfa)
-            print(prefix, code.ljust(6), "EBIT".ljust(24, "."), ebit)
-            print(prefix, code.ljust(6), "EV / EBIT".ljust(24, "."), evebit)
-            print(prefix, code.ljust(6), "P/Cap. Giro".ljust(24, "."), mvnwc)
-            print(prefix, code.ljust(6), "Net Working Capital".ljust(24, "."), nwc)
-            print(prefix, code.ljust(6), "Net Fixed Assets".ljust(24, "."), nfa)
-            print(prefix, code.ljust(6), "EY [%]".ljust(24, "."), ey)
-            print(prefix, code.ljust(6), "ROC [%]".ljust(24, "."), roc)
-            print(prefix, code.ljust(6), "P/L".ljust(24, "."), pe)
-            print(prefix, code.ljust(6), "ROE [%]".ljust(24, "."), roe)
-            print(prefix, code.ljust(6), \
-                    "Cotação [R$]".decode('utf-8').ljust(24, "."), pc)
-
 if debug:
-    print(prefix, "debug enabled")
-    print_debug()
-
-#stocks = s.query(Stock).order_by(Stock.ey.desc())
-#for i in stocks:
-#    print(i.code, i.ey, i.roc)
+    for stock in sector:
+        print_all_stock_values(stock)

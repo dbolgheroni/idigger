@@ -13,7 +13,7 @@ import urllib2
 from HTMLParser import HTMLParser
 
 from conf import *
-from stock import Stock
+from models import Stock
 
 
 # keep the class generic and treat the raw values outside
@@ -157,6 +157,17 @@ class Fundamentus(Stock):
         f.seek(0)
         self.__contents = f.read()
 
+        # instance variables for the used values
+        self._ey = self.earnings_yield()
+        self._roc = self.return_on_capital()
+        self._pe = self.price_earnings()
+        self._roe = self.return_on_equity()
+        self._pc = self.previous_close()
+
+        # add to a tracking class variable for the sorts algorithms
+        # this should give a cleaner interface, such as Stock.sort_x()
+        self.add(self)
+
     # market value
     def market_value(self):
         # Fundamentus: Valor de mercado (P)
@@ -229,7 +240,7 @@ class Fundamentus(Stock):
 
         if evebit:
             ey = 1 / evebit
-            return "{:.2f}".format(ey * 100)
+            return round(ey * 100, 2)
 
     # return on capital (ROC)
     def return_on_capital(self):
@@ -239,7 +250,7 @@ class Fundamentus(Stock):
 
         if ebit and nwc and nfa:
             roc = ebit / (nwc + nfa)
-            return "{:.2f}".format(roc * 100)
+            return round(roc * 100, 2)
 
     # price-earnings (P/E)
     def price_earnings(self):

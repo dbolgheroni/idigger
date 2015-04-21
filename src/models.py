@@ -1,13 +1,43 @@
-# Stock class
+# declare a mapping and the models used
 
-class Stock:
-    #def __init__(self, c):
-    #    self.code = c
+from __future__ import print_function
+
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Date, String, Float, Integer
+
+Base = declarative_base()
+
+
+class Stock(Base):
+    __tablename__ = 'stocks'
+    date = Column(Date, primary_key = True)
+    code = Column(String, primary_key = True)
+    ey = Column(Float)
+    roc = Column(Float)
+    pe = Column(Float)
+    roe = Column(Float)
+    pc = Column(Float)
+
+    ey_order = Column(Integer)
+    roc_order = Column(Integer)
+    gb_eyroc_order = Column(Integer)
+
+    pe_order = Column(Integer)
+    roe_order = Column(Integer)
+    gb_peroe_order = Column(Integer)
+
+    sector = []
+    @classmethod
+    def add(cls, self):
+        cls.sector.append(self)
+
+    def __repr__(self):
+        return '<Stock %r>' % (self.code)
 
     ######## P/E and ROE class methods #######
     # sort from low to high
     @classmethod
-    def sort_pe(cls, sector):
+    def sort_pe(cls):
         # |      pe           |
         # | pe_ok | pe_rotten |
         # 0------->----------->
@@ -16,7 +46,7 @@ class Stock:
         pe_ok = []
         pe_rotten = []
 
-        for s in sector:
+        for s in cls.sector:
             if s.pe >= 0:
                 pe_ok.append(s)
             else:
@@ -31,7 +61,7 @@ class Stock:
 
     # sort from high to low
     @classmethod
-    def sort_roe(cls, sector):
+    def sort_roe(cls):
         # |       roe           |
         # | roe_ok | roe_rotten |
         # <--------0------------>
@@ -40,7 +70,7 @@ class Stock:
         roe_ok = []
         roe_rotten = []
 
-        for s in sector:
+        for s in cls.sector:
             if s.roe >= 0:
                 roe_ok.append(s)
             else:
@@ -55,49 +85,49 @@ class Stock:
 
     # sort from low to high
     @classmethod
-    def sort_gb_peroe(cls, sector):
+    def sort_gb_peroe(cls):
         # | greenblatt |
         # 0------------>
         #              +
 
-        for s in sector:
-            s.greenblatt_order = s.pe_order + s.roe_order
+        for s in cls.sector:
+            s.gb_peroe_order = s.pe_order + s.roe_order
 
-        sector.sort(key=lambda s: s.greenblatt_order)
+        cls.sector.sort(key=lambda s: s.gb_peroe_order)
 
     ######## EY and ROC class methods #######
     # ey
     @classmethod
-    def sort_ey(cls, sector):
+    def sort_ey(cls):
         ey = []
 
-        for s in sector:
+        for s in cls.sector:
             ey.append(s)
 
-        ey.sort(key=lambda s: s.ey, reverse=True)
+        ey.sort(key=lambda s: s._ey, reverse=True)
 
         for i, s in enumerate(ey, start=1):
             s.ey_order = i
 
     # roc
     @classmethod
-    def sort_roc(cls, sector):
+    def sort_roc(cls):
         roc = []
 
-        for s in sector:
+        for s in cls.sector:
             roc.append(s)
 
-        roc.sort(key=lambda s: s.roc, reverse=True)
+        roc.sort(key=lambda s: s._roc, reverse=True)
 
         for i, s in enumerate(roc, start=1):
             s.roc_order = i
 
     # sort greenblatt
     @classmethod
-    def sort_gb_eyroc(cls, sector):
-        gb_order = []
+    def sort_gb_eyroc(cls):
+        gb_eyroc_order = []
 
-        for s in sector:
-            s.gb_order = s.ey_order + s.roc_order
+        for s in cls.sector:
+            s.gb_eyroc_order = s.ey_order + s.roc_order
 
-        sector.sort(key=lambda s: s.gb_order)
+        cls.sector.sort(key=lambda s: s.gb_eyroc_order)
