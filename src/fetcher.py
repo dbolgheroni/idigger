@@ -29,6 +29,11 @@
 
 from __future__ import print_function
 
+# activate pre-installed virtual environment containing the libraries;
+# in other words, run from idigger/ and not from idigger/src
+this_file = "src/venv/bin/activate_this.py"
+execfile(this_file, dict(__file__=this_file))
+
 import argparse, datetime, os
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
