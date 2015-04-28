@@ -42,8 +42,3 @@ parser.feed(html)
 
 for s in stocks:
     print(s)
-# use a file as output
-#outfile = "out.conf"
-#with open(outfile, "wt") as f:
-#    for s in stocks:
-#        print(s, file=f)
