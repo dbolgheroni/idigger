@@ -4,8 +4,10 @@
 # than one time, since the url often fails to respond at the first try.
 
 import sys
-import urllib.request
-from html.parser import HTMLParser
+#import urllib.request
+import urllib2
+#from html.parser import HTMLParser
+from HTMLParser import HTMLParser
 
 class StockParser(HTMLParser):
     def __init__(self):
@@ -28,7 +30,8 @@ class StockParser(HTMLParser):
 # determine the encoding it receives from the server. So, we use
 # decode(), since it's specified in the content.
 try:
-    html = urllib.request.urlopen("http://www.bmfbovespa.com.br/indices/ResumoCarteiraTeorica.aspx?Indice=IBrA&idioma=pt-br").read().decode('utf-8')
+    #html = urllib.request.urlopen("http://www.bmfbovespa.com.br/indices/ResumoCarteiraTeorica.aspx?Indice=IBrA&idioma=pt-br").read().decode('utf-8')
+    html = urllib2.urlopen("http://www.bmfbovespa.com.br/indices/ResumoCarteiraTeorica.aspx?Indice=IBrA&idioma=pt-br").read().decode('utf-8')
 except ConnectionResetError:
     print("can't connect to BMF&Bovespa, try running it again")
     exit(1)
