@@ -30,8 +30,8 @@
 from __future__ import print_function
 
 # activate pre-installed virtual environment containing the libraries;
-# in other words, run from idigger/ and not from idigger/src
-this_file = "src/venv/bin/activate_this.py"
+# in other words, run from $HOME
+this_file = "idigger/src/venv/bin/activate_this.py"
 execfile(this_file, dict(__file__=this_file))
 
 import argparse, datetime, os
@@ -39,6 +39,7 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
+from conf import dbfile
 from models import Base, Stock
 from fmt_drv import Fundamentus
 from debug import print_stock
@@ -68,7 +69,7 @@ with open(args.conf, 'r') as f:
 
 # sqlalchemy config
 basedir = os.path.abspath(os.path.dirname(__file__))
-engine = create_engine('sqlite:///' + os.path.join(basedir, 'idigger.db'))
+engine = create_engine('sqlite:///' + dbfile)
 session = sessionmaker()
 session.configure(bind=engine)
 Stock.metadata.create_all(engine)
