@@ -134,4 +134,4 @@ except IntegrityError:
 # debug
 if debug:
     for stock in sector:
-        print_all_stock_values(stock)
+        print_stock(stock)
