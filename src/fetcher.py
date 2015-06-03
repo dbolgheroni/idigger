@@ -39,7 +39,7 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-from conf import dbfile
+from conf import dbfile, create_homedir
 from models import Base, Stock
 from fmt_drv import Fundamentus
 from debug import print_stock
@@ -66,6 +66,9 @@ print(prefix, "conf file:", args.conf)
 # read configuration file
 with open(args.conf, 'r') as f:
     conf = tuple(f.read().splitlines())
+
+# create homedir if it does not exist
+create_homedir()
 
 # sqlalchemy config
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -133,5 +136,5 @@ except IntegrityError:
 
 # debug
 if debug:
-    for stock in sector:
+    for stock in Stock.sector:
         print_stock(stock)
