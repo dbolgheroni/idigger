@@ -47,13 +47,13 @@ class Stock(Base):
         pe_rotten = []
 
         for s in cls.sector:
-            if s.pe >= 0:
+            if s._pe >= 0:
                 pe_ok.append(s)
             else:
                 pe_rotten.append(s)
 
-        pe_ok.sort(key=lambda s: s.pe)
-        pe_rotten.sort(key=lambda s: s.pe, reverse=True)
+        pe_ok.sort(key=lambda s: s._pe)
+        pe_rotten.sort(key=lambda s: s._pe, reverse=True)
         pe = pe_ok + pe_rotten
 
         for i, s in enumerate(pe, start=1):
@@ -71,13 +71,13 @@ class Stock(Base):
         roe_rotten = []
 
         for s in cls.sector:
-            if s.roe >= 0:
+            if s._roe >= 0:
                 roe_ok.append(s)
             else:
                 roe_rotten.append(s)
 
-        roe_ok.sort(key=lambda s: s.roe, reverse=True)
-        roe_rotten.sort(key=lambda s: s.roe, reverse=True)
+        roe_ok.sort(key=lambda s: s._roe, reverse=True)
+        roe_rotten.sort(key=lambda s: s._roe, reverse=True)
         roe = roe_ok + roe_rotten
 
         for i, s in enumerate(roe, start=1):
