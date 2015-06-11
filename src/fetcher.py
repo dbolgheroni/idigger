@@ -34,7 +34,9 @@ from __future__ import print_function
 this_file = "idigger/src/venv/bin/activate_this.py"
 execfile(this_file, dict(__file__=this_file))
 
-import argparse, datetime, os
+import argparse
+import datetime
+import os
 from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
