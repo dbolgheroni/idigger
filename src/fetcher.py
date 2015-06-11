@@ -41,8 +41,8 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-from models import Base, Stock
 import conf
+from models import Base, Stock, Snapshot
 from fmt_drv import Fundamentus
 from debug import print_stock
 
@@ -117,7 +117,7 @@ Stock.sort_pe()
 Stock.sort_roe()
 Stock.sort_gb_peroe()
 
-# populate database
+### populate 'stocks' table
 # use a leading underscore to differ from the model access to the db
 for stock in Stock.sector:
     x = Stock( \
@@ -139,7 +139,28 @@ for stock in Stock.sector:
 
     s.add(x)
 
-if commit:
+### populate 'snapshots' table
+# select the top 20
+gb = []
+for stock in Stock.sector:
+    gb.append(stock)
+
+gb.sort(key=lambda stock: stock.gb_eyroc_order)
+
+stocks_number = 20
+for stock in gb:
+    if stocks_number > 0:
+        x = Snapshot( \
+                date = today, \
+                code = stock.code, \
+                pc = stock._pc)
+
+        s.add(x)
+
+        stocks_number -= 1
+
+# commit data populated to db
+if commitopt:
     print(prefix, 'commiting to database')
     try:
         s.commit()
