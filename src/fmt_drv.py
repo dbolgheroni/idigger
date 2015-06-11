@@ -114,7 +114,7 @@ class Fundamentus(Stock):
             attempts = 0
             while True:
                 try:
-                    #print(self.__prefix, self.code, "downloading data")
+                    print(self.__prefix, "handling", self.code)
                     #iurl = urllib.request.urlopen(url)
                     iurl = urllib2.urlopen(url)
                     break
