@@ -41,8 +41,8 @@ from sqlalchemy import create_engine, desc
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-from conf import dbfile, create_homedir
 from models import Base, Stock
+import conf
 from fmt_drv import Fundamentus
 from debug import print_stock
 
@@ -70,11 +70,11 @@ with open(args.conf, 'r') as f:
     conf = tuple(f.read().splitlines())
 
 # create homedir if it does not exist
-create_homedir()
+conf.create_homedir()
 
 # sqlalchemy config
 basedir = os.path.abspath(os.path.dirname(__file__))
-engine = create_engine('sqlite:///' + dbfile)
+engine = create_engine('sqlite:///' + conf.dbfile)
 session = sessionmaker()
 session.configure(bind=engine)
 Stock.metadata.create_all(engine)
