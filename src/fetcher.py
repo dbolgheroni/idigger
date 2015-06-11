@@ -89,12 +89,14 @@ if args.d:
     debug = True
 
 # handle -f option
+fetchopt = True
 if args.f:
-    fetchopt = True
+    fetchopt = False
 
 # handle -c option
+commitopt = True
 if args.c:
-    commit = True
+    commitopt = False
 
 # instantiate stocks
 # the complexity is hidden inside the driver and in the Stock class
