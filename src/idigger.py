@@ -27,6 +27,13 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from __future__ import print_function
+
+# activate pre-installed virtual environment containing the libraries;
+# in other words, run from $HOME
+this_file = "idigger/src/venv/bin/activate_this.py"
+execfile(this_file, dict(__file__=this_file))
+
 from flask import Flask, jsonify, abort, make_response, request
 from flask.ext.cors import CORS
 from flask.ext.sqlalchemy import SQLAlchemy
