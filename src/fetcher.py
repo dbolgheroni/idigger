@@ -55,7 +55,10 @@ opts.add_argument("-d",
         help="enable debug, print intermediary operations",
         action="store_true")
 opts.add_argument("-f",
-        help="do not fetch info from source (useful with debug)",
+        help="do not fetch info from source",
+        action="store_true")
+opts.add_argument("-c",
+        help="do not commit fetched data into database",
         action="store_true")
 opts.add_argument("conf",
         help="the file which contains stocks codes, one per line")
@@ -87,9 +90,11 @@ if args.d:
 
 # handle -f option
 if args.f:
-    fetchopt = False
-else:
     fetchopt = True
+
+# handle -c option
+if args.c:
+    commit = True
 
 # instantiate stocks
 # the complexity is hidden inside the driver and in the Stock class
@@ -132,11 +137,12 @@ for stock in Stock.sector:
 
     s.add(x)
 
-print(prefix, 'commiting to database')
-try:
-    s.commit()
-except IntegrityError:
-    print(prefix, 'error commiting to database')
+if commit:
+    print(prefix, 'commiting to database')
+    try:
+        s.commit()
+    except IntegrityError:
+        print(prefix, 'error commiting to database')
 
 # debug
 if debug:
