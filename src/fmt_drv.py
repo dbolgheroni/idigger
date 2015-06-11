@@ -52,7 +52,6 @@ class FundamentusParser(HTMLParser):
         try:
             match = regex.search(value)
         except TypeError:
-            #print("lookup=", self.__lookup, ", value=", value, sep="")
             return None
 
         if match:
