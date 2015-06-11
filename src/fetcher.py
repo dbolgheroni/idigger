@@ -54,8 +54,8 @@ opts = argparse.ArgumentParser()
 opts.add_argument("-d",
         help="enable debug, print intermediary operations",
         action="store_true")
-opts.add_argument("-D",
-        help="do not download info from source (useful with debug)",
+opts.add_argument("-f",
+        help="do not fetch info from source (useful with debug)",
         action="store_true")
 opts.add_argument("conf",
         help="the file which contains stocks codes, one per line")
@@ -67,7 +67,7 @@ print(prefix, "conf file:", args.conf)
 
 # read configuration file
 with open(args.conf, 'r') as f:
-    conf = tuple(f.read().splitlines())
+    conffile = tuple(f.read().splitlines())
 
 # create homedir if it does not exist
 conf.create_homedir()
@@ -85,18 +85,20 @@ debug = False
 if args.d:
     debug = True
 
-# handle -D option
-if args.D:
+# handle -f option
+if args.f:
     fetchopt = False
 else:
     fetchopt = True
 
 # instantiate stocks
 # the complexity is hidden inside the driver and in the Stock class
-today = datetime.datetime.today();
+today = datetime.datetime.today()
 todaystr = today.strftime('%Y%m%d')
-print(prefix, 'downloading raw data and parsing stock info')
-for code in conf:
+if fetchopt:
+    print(prefix, 'fetching raw data')
+print(prefix, 'parsing stock info')
+for code in conffile:
     # stocks which failed to instantiate are marked as None
     Fundamentus(code, fetch=fetchopt, date=todaystr);
 
