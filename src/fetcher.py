@@ -139,26 +139,6 @@ for stock in Stock.sector:
 
     s.add(x)
 
-### populate 'snapshots' table
-# select the top 20
-gb = []
-for stock in Stock.sector:
-    gb.append(stock)
-
-gb.sort(key=lambda stock: stock.gb_eyroc_order)
-
-stocks_number = 20
-for stock in gb:
-    if stocks_number > 0:
-        x = Snapshot( \
-                date = today, \
-                code = stock.code, \
-                pc = stock._pc)
-
-        s.add(x)
-
-        stocks_number -= 1
-
 # commit data populated to db
 if commitopt:
     print(prefix, 'commiting to database')
