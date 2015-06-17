@@ -85,11 +85,9 @@ def get_stock(stock):
 
 @app.route('/api/v0.1/snapshot/<string:date>', methods=['GET'])
 def get_snapshot(date):
-    # datetime object do not have a strptime() method, so we need to use
-    # date() also
-
     # the reference snapshot
     try:
+        # no strptime() in date object, so we need to date()
         d = datetime.datetime.strptime(date, '%Y%m%d').date()
     except ValueError:
         return make_response(jsonify( \
