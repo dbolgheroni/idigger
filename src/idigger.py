@@ -119,11 +119,11 @@ def get_snapshot(date):
 
     today = get_weekday(datetime.date.today())
 
-    resp = {}
     top = []
+    snapshot_gain = []
+
     # for each stock from the snapshot
     # and build the response
-    snapshot_gain = []
     for q in query1:
         pc1 = q.pc
 
