@@ -98,7 +98,6 @@ def get_snapshot(date):
             order_by(Stock.gb_eyroc_order).\
             limit(20).\
             all()
-    print(query1)
 
     def get_weekday(d):
         """
