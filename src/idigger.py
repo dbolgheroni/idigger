@@ -102,7 +102,6 @@ def get_snapshot(date):
             all()
     print(query1)
 
-
     def get_weekday(d):
         """
         Returns the friday before if the date happens to be in the
