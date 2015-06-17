@@ -89,7 +89,12 @@ def get_snapshot(date):
     # date() also
 
     # the reference snapshot
-    d = datetime.datetime.strptime(date, '%Y%m%d').date()
+    try:
+        d = datetime.datetime.strptime(date, '%Y%m%d').date()
+    except ValueError:
+        return make_response(jsonify( \
+                {'error': 'invalid date format'}), 404)
+
     query1 = Stock.query. \
             filter_by(date=d).\
             order_by(Stock.gb_eyroc_order).\
