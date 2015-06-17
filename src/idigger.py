@@ -38,7 +38,6 @@ from flask import Flask, jsonify, abort, make_response, request
 from flask.ext.cors import CORS
 from flask.ext.sqlalchemy import SQLAlchemy
 import os.path
-import time
 import datetime
 
 from conf import dbfile
@@ -84,7 +83,63 @@ def get_stock(stock):
 
     return jsonify(sresp)
 
-@app.route('/api/v0.1/stocks/today', methods=['GET'])
+@app.route('/api/v0.1/snapshot/<string:date>', methods=['GET'])
+def get_snapshot(date):
+    # datetime object do not have a strptime() method, so we need to use
+    # date() also
+
+    # the reference snapshot
+    d = datetime.datetime.strptime(date, '%Y%m%d').date()
+    query1 = Stock.query. \
+            filter_by(date=d).\
+            order_by(Stock.gb_eyroc_order).\
+            limit(20).\
+            all()
+    print(query1)
+
+
+    def get_weekday(d):
+        """
+        Returns the friday before if the date happens to be in the
+        weekend. Needed because BM&FBovespa do not operate on these days
+        and thus, it's wise to not run fetcher.py on these days, to not
+        overpopulate database.
+        """
+
+        if d.weekday() == 5:
+            return d - datetime.timedelta(days=1)
+        elif d.weekday() == 6:
+            return d - datetime.timedelta(days=2)
+        else:
+            return d
+
+    today = get_weekday(datetime.date.today())
+
+    resp = {}
+    top = []
+    # for each stock from the snapshot
+    # and build the response
+    snapshot_gain = []
+    for q in query1:
+        pc1 = q.pc
+
+        query2 = Stock.query.filter_by(code=q.code, date=today).first()
+        pc2 = query2.pc
+
+        gain = ((pc2 - pc1) / pc1) * 100
+        snapshot_gain.append(gain)
+
+        top.append([q.code, gain])
+
+    try:
+        gain = sum(snapshot_gain)/len(snapshot_gain)
+    except ZeroDivisionError:
+        return make_response(jsonify({'error': 'no data for this date'}), 404)
+
+    resp = { 'stocks': top, 'gain': sum(snapshot_gain)/len(snapshot_gain) }
+    return jsonify(resp)
+
+@app.route('/api/v0.1/all/today', methods=['GET'])
 def get_stocks_today():
     d = datetime.date.today()
     query = Stock.query.filter_by(date=d).all()
@@ -101,9 +156,6 @@ def get_stocks_today():
 @app.errorhandler(404)
 def not_found(error):
     return make_response(jsonify({'error': 'not found'}), 404)
-
-#def get_tasks():
-#    return jsonify({'tasks': tasks})
 
 if __name__ == '__main__':
     #app.run(debug = True, use_reloader = False)
