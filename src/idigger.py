@@ -124,7 +124,11 @@ def get_snapshot(date):
         pc1 = q.pc
 
         query2 = Stock.query.filter_by(code=q.code, date=today).first()
-        pc2 = query2.pc
+        try:
+            pc2 = query2.pc
+        except AttributeError:
+            return make_response(jsonify( \
+                    {'error': 'no data available for today'}), 404)
 
         gain = ((pc2 - pc1) / pc1) * 100
         snapshot_gain.append(gain)
@@ -134,7 +138,8 @@ def get_snapshot(date):
     try:
         gain = sum(snapshot_gain)/len(snapshot_gain)
     except ZeroDivisionError:
-        return make_response(jsonify({'error': 'no data for this date'}), 404)
+        return make_response(jsonify( \
+                {'error': 'no data for this snapshot'}), 404)
 
     resp = { 'stocks': top, 'gain': sum(snapshot_gain)/len(snapshot_gain) }
     return jsonify(resp)
