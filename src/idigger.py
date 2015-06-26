@@ -1,33 +1,9 @@
 #!/usr/bin/env python2.7
-# -*- coding: utf-8 -*-
-#
-# Copyright (c) 2012-2015, Daniel Bolgheroni. All rights reserved.
-# 
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are
-# met:
-# 
-#   1. Redistributions of source code must retain the above copyright
-#      notice, this list of conditions and the following disclaimer.
-#
-#   2. Redistributions in binary form must reproduce the above copyright
-#      notice, this list of conditions and the following disclaimer in
-#      the documentation and/or other materials provided with the
-#      distribution.
-# 
-# THIS SOFTWARE IS PROVIDED BY DANIEL BOLGHERONI ''AS IS'' AND ANY
-# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-# PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL DANIEL BOLGHERONI OR
-# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-# EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-# PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-# PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-# NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from __future__ import print_function
+
+import os.path
+import datetime
 
 # activate pre-installed virtual environment containing the libraries;
 # in other words, run from $HOME
@@ -37,8 +13,6 @@ execfile(this_file, dict(__file__=this_file))
 from flask import Flask, jsonify, abort, make_response, request
 from flask.ext.cors import CORS
 from flask.ext.sqlalchemy import SQLAlchemy
-import os.path
-import datetime
 
 from conf import dbfile
 
@@ -85,26 +59,11 @@ def get_stock(stock):
 
 @app.route('/api/v0.1/snapshot/<string:date>', methods=['GET'])
 def get_snapshot(date):
-    # the reference snapshot
-    try:
-        # no strptime() in date object, so we need to date()
-        d = datetime.datetime.strptime(date, '%Y%m%d').date()
-    except ValueError:
-        return make_response(jsonify( \
-                {'error': 'invalid date format'}), 404)
-
-    query1 = Stock.query. \
-            filter_by(date=d).\
-            order_by(Stock.gb_eyroc_order).\
-            limit(20).\
-            all()
-
-    def get_weekday(d):
+    def get_workday(d):
         """
-        Returns the friday before if the date happens to be in the
-        weekend. Needed because BM&FBovespa do not operate on these days
-        and thus, it's wise to not run fetcher.py on these days, to not
-        overpopulate database.
+        Returns the friday before if the date requested is on weekend.
+        BM&FBovespa do not operate on these days and it's wise to not
+        run fetcher on these, to save size on database.
         """
 
         if d.weekday() == 5:
@@ -114,7 +73,22 @@ def get_snapshot(date):
         else:
             return d
 
-    today = get_weekday(datetime.date.today())
+    # the reference snapshot
+    try:
+        # no strptime() in date object, so we need to date()
+        d = datetime.datetime.strptime(date, '%Y%m%d').date()
+    except ValueError:
+        return make_response(jsonify( \
+                {'error': 'invalid date format'}), 404)
+
+    wd = get_workday(d)
+    query1 = Stock.query. \
+            filter_by(date=wd). \
+            order_by(Stock.gb_eyroc_order). \
+            limit(20). \
+            all()
+
+    today = get_workday(datetime.date.today())
 
     top = []
     snapshot_gain = []
@@ -145,17 +119,28 @@ def get_snapshot(date):
     resp = { 'stocks': top, 'gain': sum(snapshot_gain)/len(snapshot_gain) }
     return jsonify(resp)
 
-@app.route('/api/v0.1/all/today', methods=['GET'])
+@app.route('/api/v0.1/stock/all', methods=['GET'])
 def get_stocks_today():
     d = datetime.date.today()
     query = Stock.query.filter_by(date=d).all()
     s = {}
 
     for q in query:
-        s[q.code] = { 'code': q.code, 'ey': q.ey, 'roc': q.roc,
-                'pe': q.pe, 'roe': q.roe, 'pc': q.pc,
-                'gb_peroe_order': q.gb_peroe_order,
-                'gb_eyroc_order': q.gb_eyroc_order }
+        s[q.code] = { \
+                'code': q.code, \
+                'ey': q.ey, \
+                'roc': q.roc, \
+                'pe': q.pe, \
+                'roe': q.roe, \
+                'pc': q.pc, \
+                'gb_eyroc_order': q.gb_eyroc_order \
+                }
+
+    return jsonify(s)
+
+@app.route('/api/v0.1/test', methods=['GET'])
+def get_test():
+    s = { 'list': ['foo', 'bar', 'a'] }
 
     return jsonify(s)
 
@@ -163,6 +148,7 @@ def get_stocks_today():
 def not_found(error):
     return make_response(jsonify({'error': 'not found'}), 404)
 
+# development only, do not need this with Tornado
 if __name__ == '__main__':
     #app.run(debug = True, use_reloader = False)
     app.run(debug = True)
