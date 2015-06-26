@@ -1,10 +1,39 @@
 /* run only after page is loaded */
 $(function() {
-    console.log("page loaded, executing script");
 
-    $.getJSON("http://localhost:5000/api/v0.1/stocks/today", function (response) {
+
+/* associate event with the 'Generate' button */
+$('#generate-btn').click(function (v) {
+    var refdate = $('#refdate').val();
+
+    update_gain(refdate);
+});
+
+/* update gain */
+var update_gain = function (refdate) {
+    $.getJSON("http://localhost:5000/api/v0.1/snapshot/" + refdate, function (response) {
+        var gain = $('#gain');
+
+        gain_value = response.gain.toFixed(2);
+
+        if (gain_value >= 0) {
+            gain.css("color", "blue");
+        } else {
+            gain.css("color", "red");
+        }
+
+        gain.text(response.gain.toFixed(2) + '%');
+    });
+
+    var refdate = $('#refdate').val(refdate);
+
+}
+
+/* update table */
+var update_table = function () {
+    $.getJSON("http://localhost:5000/api/v0.1/stock/all", function (response) {
         /* push stocks to an array */
-        stocks = [];
+        var stocks = [];
         for (var s in response) {
             stocks.push(response[s]);
         }
@@ -13,7 +42,7 @@ $(function() {
          * sort properly. Original sort only sorts String correctly.
          * 
          * This procedure is described at the Douglas Crockford book
-         * JavaScript: The Good Parts. */
+         * "JavaScript: The Good Parts". */
         var by = function (name, minor) {
             return function (o, p) {
                 var a, b;
@@ -39,6 +68,7 @@ $(function() {
 
         stocks.sort(by('gb_eyroc_order', by('code')));
 
+        /* create table */
         var table = $('<table></table>');
         table.prop('border', '1');
 
@@ -52,6 +82,11 @@ $(function() {
 
         for (i = 0; i < stocks.length; i += 1) {
             var row = $('<tr></tr>');
+
+            if (i < 20) {
+                row.addClass("top");
+            }
+
             row.append('<td>' + stocks[i].code + '</td>');
             row.append('<td>' + stocks[i].ey + '</td>');
             row.append('<td>' + stocks[i].roc + '</td>');
@@ -61,6 +96,12 @@ $(function() {
             table.append(row);
         }
 
-        $('#view-table').append(table);
+        $('#gb_table').append(table);
     });
+}
+
+/* oldest value of the database */
+update_gain(20150617);
+update_table();
+
 });

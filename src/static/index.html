@@ -9,9 +9,17 @@
     <script type="text/javascript" src="./js/idigger.js"></script>
 </head>
 <body>
-    <p><center><h1>Tabela Greenblatt</h1></center></p>
+    <p><center><h1>Brazilian IBRA index Greenblatt Table</h1></center></p>
 
-    <div id="view-table"></div>
+    <p>
+        <b>Reference:</b> <input id="refdate" type="text" placeholder="YYYYMMDD date format">
+        <input id="generate-btn" type="button" value="Generate"></input>
+    </p>
+
+    <p><b>Gain: </b><span id="gain"/></p>
+
+    <p>This is the buying table of today according to the Greenblatt method.</p>
+    <div id="gb_table"/>
 
     </div>
 </body>
