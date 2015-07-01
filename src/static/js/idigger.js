@@ -1,7 +1,6 @@
 /* run only after page is loaded */
 $(function() {
 
-
 /* associate event with the 'Generate' button */
 $('#generate-btn').click(function (v) {
     var refdate = $('#refdate').val();
@@ -26,7 +25,6 @@ var update_gain = function (refdate) {
     });
 
     var refdate = $('#refdate').val(refdate);
-
 }
 
 /* update table */
@@ -97,6 +95,8 @@ var update_table = function () {
         }
 
         $('#gb_table').append(table);
+        $('.top').css("background-color", "LightBlue");
+        $("th").css("background-color", "Gray");
     });
 }
 
