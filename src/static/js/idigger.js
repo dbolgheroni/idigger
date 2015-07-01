@@ -11,7 +11,7 @@ $('#generate-btn').click(function (v) {
 
 /* update gain */
 var update_gain = function (refdate) {
-    $.getJSON("http://localhost:5000/api/v0.1/snapshot/" + refdate, function (response) {
+    $.getJSON("http://bolgh.eng.br:5000/api/v0.1/snapshot/" + refdate, function (response) {
         var gain = $('#gain');
 
         gain_value = response.gain.toFixed(2);
@@ -31,7 +31,7 @@ var update_gain = function (refdate) {
 
 /* update table */
 var update_table = function () {
-    $.getJSON("http://localhost:5000/api/v0.1/stock/all", function (response) {
+    $.getJSON("http://bolgh.eng.br:5000/api/v0.1/stock/all", function (response) {
         /* push stocks to an array */
         var stocks = [];
         for (var s in response) {
