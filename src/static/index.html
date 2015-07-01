@@ -1,5 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
+
 <html>
 <head>
     <title>Brazilian IBRA index Greenblatt Table</title>
@@ -11,16 +11,15 @@
 <body>
     <p><center><h1>Brazilian IBRA index Greenblatt Table</h1></center></p>
 
-    <p>
-        <b>Reference:</b> <input id="refdate" type="text" placeholder="YYYYMMDD date format">
-        <input id="generate-btn" type="button" value="Generate"></input>
-    </p>
+    <p>This is the Greenblatt method applied to the brazilian IBRA index stocks. The table refers to the buy recommendation of today, and the gain is based on the buy recommendation of the reference day.</p>
+
+    <p>If you don't know how the Greenblatt method works, do your research. <b>This software is experimental, use at your own risk.</b></p>
+
+    <p><b>Reference:</b> <input id="refdate" type="text" placeholder="YYYYMMDD date format"> <input id="generate-btn" type="button" value="Generate"></input></p>
 
     <p><b>Gain: </b><span id="gain"/></p>
 
-    <p>This is the buying table of today according to the Greenblatt method.</p>
+    <p>Buy recommentation table according to the Greenblatt method:</p>
     <div id="gb_table"/>
-
-    </div>
 </body>
 </html>
