@@ -33,5 +33,5 @@ from tornado.ioloop import IOLoop
 from idigger import app
 
 http_server = HTTPServer(WSGIContainer(app))
-http_server.listen(5000, address="127.0.0.1")
+http_server.listen(5000, address="0.0.0.0")
 IOLoop.instance().start()
