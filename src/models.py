@@ -131,9 +131,3 @@ class Stock(Base):
             s.gb_eyroc_order = s.ey_order + s.roc_order
 
         cls.sector.sort(key=lambda s: s.gb_eyroc_order)
-
-class Snapshot(Base):
-    __tablename__ = 'snapshots'
-    date = Column(Date, primary_key = True)
-    code = Column(String, primary_key = True)
-    pc = Column(Float)

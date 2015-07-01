@@ -42,7 +42,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
 import conf
-from models import Base, Stock, Snapshot
+from models import Base, Stock
 from fmt_drv import Fundamentus
 from debug import print_stock
 
