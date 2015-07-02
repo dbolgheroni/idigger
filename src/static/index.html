@@ -9,11 +9,15 @@
     <script type="text/javascript" src="./js/idigger.js"></script>
 </head>
 <body>
-    <p><center><h1>Brazilian IBRA index Greenblatt Table</h1></center></p>
+    <p><center><h1>Brazilian IBrA index Greenblatt Table</h1></center></p>
 
-    <p>This is the Greenblatt method applied to the brazilian IBRA index stocks. The table refers to the buy recommendation of today, and the gain is based on the buy recommendation of the reference day.</p>
+    <p>This is the Greenblatt method applied to the brazilian <a href="http://www.bmfbovespa.com.br/indices/ResumoIndice.aspx?Indice=IBRA&Idioma=en-US">IBrA</a> index stocks. The table lists the stocks ordered by the Greenblatt method, and the <span style="background-color: Lightblue">highlighted</span> ones represent the buying recommendation of today. The reference is used to calculated the gain based on the recommended stocks of this specific date. You can change it and click <i>Generate</i> to use another reference. The software will do the calculations based on what is in the database until now.</p>
 
-    <p>If you don't know how the Greenblatt method works, do your research. <b>This software is experimental, use at your own risk.</b></p>
+    <p>The software runs everyday except on weekends, gather data and process it accordingly. A webservice with a RESTful API provides the data in which this site uses. The API is under development, not documented, not stable yet. The code webpage is available <a href="https://github.com/dbolgheroni/idigger">here</a>.
+
+    <p>If you don't know how the Greenblatt method works, do your own <a href="http://www.forbes.com/sites/moneybuilder/2013/07/16/why-you-should-joel-greenblatts-magic-formula-stocks-seriously/">research</a>. <b>This software is experimental, use at your own risk.</b></p>
+
+    Contact me <a href="mailto: dbolgheroni@gmail.com">here</a>.
 
     <p><b>Reference:</b> <input id="refdate" type="text" placeholder="YYYYMMDD date format"> <input id="generate-btn" type="button" value="Generate"></input></p>
 
